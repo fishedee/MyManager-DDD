@@ -1,9 +1,25 @@
 import MyPageContainer from '@/components/MyPageContainer';
-import { Table } from 'antd-formily-boost';
+import { Table, SpaceDivider } from 'antd-formily-boost';
 import { createSchemaField, observer, FormConsumer } from '@formily/react';
 import { Button } from 'antd';
-import { Input, Select, FormItem, Submit, Form, Space } from '@formily/antd';
+import {
+    Input,
+    Select,
+    FormItem,
+    Submit,
+    Form,
+    Space,
+    FormGrid,
+} from '@formily/antd';
 import useTableBoost from '@/hooks/useTableBoost';
+import useRequest from '@/hooks/useRequest';
+import SelectIsEnabled from './SelectIsEnabled';
+import SelectRole from './SelectRole';
+import Link from '@/components/Link';
+import { Field, onFieldReact } from '@formily/core';
+import ProCard from '@ant-design/pro-card';
+import { useHistory } from 'react-router-dom';
+import useErrorCatch from '@/hooks/useErrorCatch';
 
 const SchemaField = createSchemaField({
     components: {
@@ -14,61 +30,76 @@ const SchemaField = createSchemaField({
         Button,
         Submit,
         Table,
+        SelectIsEnabled,
+        SelectRole,
+        SpaceDivider,
+        Link,
+        FormGrid,
     },
 });
 
 const UserList: React.FC<any> = observer((props) => {
-    const { form, data, fetch, loading } = useTableBoost('/user/search');
+    const history = useHistory();
+    const request = useRequest();
+    const { form, data, fetch, loading } = useTableBoost('/user/search', {
+        effects: () => {
+            onFieldReact('list.*.operatorion.del', (f) => {
+                const field = f as Field;
+                const id = field.query('..id').value();
+                field.componentProps.onClick = useErrorCatch(async () => {
+                    await request({
+                        url: '/user/del',
+                        method: 'POST',
+                        data: {
+                            id: id,
+                        },
+                    });
+                    fetch();
+                });
+            });
+            onFieldReact('list.*.operatorion.edit', (f) => {
+                const field = f as Field;
+                const id = field.query('..id').value();
+                field.componentProps.to = {
+                    pathname: '/user/detail',
+                    query: {
+                        id: id,
+                    },
+                };
+            });
+        },
+    });
     const querySchema = (
         <SchemaField>
-            <SchemaField.Object name="where">
-                <SchemaField.Void
-                    x-component="Space"
-                    x-component-props={{
-                        size: [20, 20],
-                        wrap: true,
-                    }}
-                >
-                    <SchemaField.String
-                        name="name"
-                        title="名字"
-                        x-decorator="FormItem"
-                        x-component="Input"
-                        x-component-props={{}}
-                    />
-                    <SchemaField.Void
-                        x-component="Space"
-                        x-component-props={{
-                            size: 10,
-                            wrap: true,
-                        }}
-                    >
-                        <SchemaField.Void
-                            x-component="Submit"
-                            x-component-props={{
-                                onSubmit: fetch,
-                                children: '查询',
-                            }}
-                        />
-                        <SchemaField.Void
-                            x-component="Button"
-                            x-component-props={{
-                                onClick: () => {
-                                    data.where = {};
-                                    fetch();
-                                },
-                                children: '重置',
-                            }}
-                        />
-                    </SchemaField.Void>
-                </SchemaField.Void>
+            <SchemaField.Object
+                name="where"
+                x-decorator="FormGrid"
+                x-decorator-props={{
+                    minColumns: 3,
+                    columnGap: 20,
+                }}
+            >
+                <SchemaField.String
+                    name="name"
+                    title="名字"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    x-component-props={{}}
+                />
+                <SchemaField.String
+                    name="remark"
+                    title="备注"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    x-component-props={{}}
+                />
             </SchemaField.Object>
         </SchemaField>
     );
     const listSchema = (
         <SchemaField>
             <SchemaField.Array
-                name="data"
+                name="list"
                 x-component="Table"
                 x-component-props={{
                     paginaction: data.limit,
@@ -94,30 +125,107 @@ const UserList: React.FC<any> = observer((props) => {
                             labelIndex: 'name',
                         }}
                     />
-
+                    <SchemaField.Void title="角色" x-component="Table.Column">
+                        <SchemaField.String
+                            x-read-pretty={true}
+                            x-editable={false}
+                            name="roles"
+                            x-component={'SelectRole'}
+                        />
+                    </SchemaField.Void>
                     <SchemaField.Void
-                        title="角色"
+                        title="是否可用"
+                        x-component="Table.Column"
+                    >
+                        <SchemaField.String
+                            x-editable={false}
+                            name="isEnabled"
+                            x-component={'SelectIsEnabled'}
+                        />
+                    </SchemaField.Void>
+                    <SchemaField.String
+                        title="备注"
                         x-component="Table.Column"
                         x-component-props={{
-                            labelIndex: 'roles',
+                            labelIndex: 'remark',
                         }}
                     />
+                    <SchemaField.Void title="操作" x-component="Table.Column">
+                        <SchemaField.Void
+                            name="operatorion"
+                            title="操作"
+                            x-component="SpaceDivider"
+                        >
+                            <SchemaField.Void
+                                name="edit"
+                                title="编辑"
+                                x-component="Link"
+                            />
+                            <SchemaField.Void
+                                name="del"
+                                title="删除"
+                                x-component="Link"
+                            />
+                        </SchemaField.Void>
+                    </SchemaField.Void>
                 </SchemaField.Void>
             </SchemaField.Array>
         </SchemaField>
     );
     return (
-        <Form form={form} feedbackLayout={'none'}>
+        <Form form={form} feedbackLayout={'none'} layout={'vertical'}>
             <MyPageContainer
-                title={'用户管理'}
+                title={'用户列表'}
                 hiddenBack={true}
-                content={querySchema}
                 loading={loading}
             >
-                {listSchema}
+                <Space
+                    direction="vertical"
+                    style={{ display: 'flex' }}
+                    size={20}
+                >
+                    <ProCard>
+                        <Space style={{ display: 'flex' }} direction="vertical">
+                            {querySchema}
+                            <Space
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                }}
+                            >
+                                <Button type="primary" onClick={fetch}>
+                                    查询
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        data.where = {};
+                                        fetch();
+                                    }}
+                                >
+                                    重置
+                                </Button>
+                            </Space>
+                        </Space>
+                    </ProCard>
+                    <ProCard
+                        title="用户列表"
+                        extra={
+                            <Space>
+                                <Button
+                                    type="primary"
+                                    onClick={() => {
+                                        history.push('/user/detail');
+                                    }}
+                                >
+                                    添加用户
+                                </Button>
+                            </Space>
+                        }
+                    >
+                        {listSchema}
+                    </ProCard>
+                </Space>
             </MyPageContainer>
-
-            <FormConsumer>{(data) => JSON.stringify(data.values)}</FormConsumer>
         </Form>
     );
 });

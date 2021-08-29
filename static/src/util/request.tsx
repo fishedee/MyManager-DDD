@@ -59,12 +59,15 @@ export type ResponseDataType = {
     data: any;
 };
 
-type AxiosExtendRequestConfig = AxiosRequestConfig;
-
-export default async function request(
+export type RequestType = (
     fetch: AxoisFetch,
-    options: AxiosExtendRequestConfig,
-) {
+    options: AxiosRequestConfig,
+) => Promise<any>;
+
+const request: RequestType = async (
+    fetch: AxoisFetch,
+    options: AxiosRequestConfig,
+) => {
     //添加csrf头部
     if (!options.headers) {
         options.headers = {};
@@ -91,4 +94,5 @@ export default async function request(
     checkBody(data);
 
     return data.data;
-}
+};
+export default request;

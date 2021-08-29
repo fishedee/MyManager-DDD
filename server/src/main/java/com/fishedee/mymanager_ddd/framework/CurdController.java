@@ -1,7 +1,10 @@
 package com.fishedee.mymanager_ddd.framework;
 
 import com.fishedee.jpa_boost.*;
+import com.fishedee.reflection_boost.GenericActualArgumentExtractor;
 import com.fishedee.util_boost.annotation.TransactionalForWrite;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +20,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 @Validated
-public class CurdController<IdT extends Serializable,DtoT,EntityT,FilterT extends CurdFilterable> {
+@Slf4j
+public class CurdController<EntityT,IdT extends Serializable,DtoT,FilterT extends CurdFilterable> {
     @Autowired
     protected QueryRepository queryRepository;
 
@@ -34,9 +38,9 @@ public class CurdController<IdT extends Serializable,DtoT,EntityT,FilterT extend
     private Method entityModMethod;
 
     public CurdController(){
-        ParameterizedType ptype = (ParameterizedType)this.getClass().getGenericSuperclass();
-        this.dtoClazz = (Class)ptype.getActualTypeArguments()[1];
-        this.entityClazz = (Class)ptype.getActualTypeArguments()[2];
+        GenericActualArgumentExtractor extractor = new GenericActualArgumentExtractor(getClass(),CurdController.class);
+        this.entityClazz = extractor.getActualType(0);
+        this.dtoClazz = extractor.getActualType(2);
 
         try {
             this.entityConstructor = this.entityClazz.getDeclaredConstructor(this.dtoClazz);
@@ -53,53 +57,117 @@ public class CurdController<IdT extends Serializable,DtoT,EntityT,FilterT extend
         this.curdRepository = curdRepository;
     }
 
+    protected void preSearch(FilterT filterT,PageDTO pageDTO){
+
+    }
+
+    protected Page<List<EntityT>> postSearch(Page<List<EntityT>> data){
+        return data;
+    }
+
     @GetMapping("/search")
-    public Page<List<EntityT>> search(WebBoostRequestBox<FilterT> filter, CurdAntdPageDTO pageDTO){
-        return this.queryRepository.findByFilter(entityClazz,filter.unwrap(),pageDTO.getPageable().withCount().withSort("id desc"));
+    public Page<List<EntityT>> search(FilterT filter, PageDTO pageDTO){
+        preSearch(filter,pageDTO);
+        Page<List<EntityT>> result =  this.queryRepository.findByFilter(entityClazz,filter,pageDTO.getPageable().withCount().withSort("id desc"));
+        return postSearch(result);
+    }
+
+    protected void preGetBatch(List<IdT> ids){
+
+    }
+
+    protected List<EntityT> postGetBatch(List<EntityT> data){
+        return data;
+    }
+
+    @GetMapping("/getBatch")
+    public List<EntityT> getBatch(List<IdT> ids){
+        preGetBatch(ids);
+        List<EntityT> result =  this.curdRepository.getBatch(ids);
+        result = postGetBatch(result);
+        return result;
+    }
+
+    protected void preGet(IdT ids){
+
+    }
+
+    protected EntityT postGet(EntityT data){
+        return data;
     }
 
     @GetMapping("/get")
-    public EntityT get(@NotNull WebBoostRequestBox<IdT> id){
-        return this.curdRepository.get(id.unwrap());
+    public EntityT get(IdT id){
+        preGet(id);
+        EntityT result = this.curdRepository.get(id);
+        result = postGet(result);
+        return result;
+    }
+
+    protected void preAdd(DtoT data){
+
+    }
+
+    protected void postAdd(EntityT entity){
     }
 
     @PostMapping("/add")
     @TransactionalForWrite
-    public IdT add(WebBoostRequestBox<DtoT> data){
+    public IdT add(DtoT data)throws Exception{
         try{
-            EntityT entity = this.entityConstructor.newInstance(data.unwrap());
+            preAdd(data);
+            EntityT entity = this.entityConstructor.newInstance(data);
+            postAdd(entity);
             this.curdRepository.add(entity);
             return (IdT)entityGetIdMethod.invoke(entity);
         }catch(IllegalAccessException e ){
             throw new RuntimeException(e);
         }catch(IllegalArgumentException e ){
             throw new RuntimeException(e);
-        }catch(InvocationTargetException e ){
-            throw new RuntimeException(e);
         }catch(InstantiationException e ){
             throw new RuntimeException(e);
+        }catch(InvocationTargetException e ){
+            throw (Exception) e.getCause();
         }
+    }
+
+    protected void preMod(DtoT data,IdT id){
+
+    }
+
+    protected void postMod(EntityT entity){
     }
 
     @PostMapping("mod")
     @TransactionalForWrite
-    public void mod(WebBoostRequestBox<DtoT> data,@NotNull  WebBoostRequestBox<IdT> id){
+    public void mod(DtoT data, IdT id)throws Exception{
         try{
-            EntityT entity = this.curdRepository.get(id.unwrap());
-            this.entityModMethod.invoke(entity,data.unwrap());
+            preMod(data,id);
+            EntityT entity = this.curdRepository.get(id);
+            postMod(entity);
+            this.entityModMethod.invoke(entity,data);
         }catch(IllegalAccessException e ){
             throw new RuntimeException(e);
         }catch(IllegalArgumentException e ){
             throw new RuntimeException(e);
         }catch(InvocationTargetException e ){
-            throw new RuntimeException(e);
+            throw (Exception) e.getCause();
         }
+    }
+
+    protected void preDel(IdT id){
+
+    }
+
+    protected void postDel(EntityT entity){
     }
 
     @PostMapping("del")
     @TransactionalForWrite
-    public void del(@NotNull WebBoostRequestBox<IdT> id){
-        EntityT entity = this.curdRepository.get(id.unwrap());
+    public void del(IdT id){
+        preDel(id);
+        EntityT entity = this.curdRepository.get(id);
+        postDel(entity);
         this.curdRepository.del(entity);
     }
 }

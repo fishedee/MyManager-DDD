@@ -1,10 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { useCallback } from 'react';
 import { observe } from '@formily/reactive';
-import axios, { AxiosRequestConfig, AxiosPromise } from 'axios';
+import { AxiosRequestConfig } from 'axios';
+import useRequest from './useRequest';
 
-export type UseQueryRequest = (config: AxiosRequestConfig) => AxiosPromise;
+export type UseQueryRequest = (config: AxiosRequestConfig) => Promise<any>;
 
 export type UseQueryFetch = (data: UseQueryRequest) => Promise<void> | void;
 
@@ -30,7 +30,7 @@ interface IDispose {
  * 数据变更自动刷新，页码变化，左侧树选择时，我们需要重新拉ajax。这种场景下，直接传数据自身，会自动检查数据是否变更了，来触发refresh。
  *      与react的不同，这里的数据检查同时支持了基础数据检查，与复杂数据检查，而不是简单的引用检查，这样性能更好，也更使用。我们可以深度侦听整个filter数据是否变化来触发refresh
  * 按钮刷新，其他场景，通过onClick等方式的刷新，所以我们对外提供了fetch接口，onClick直接绑定到这个fetch接口上就可以了
- * 不缓存，useQuery不提供缓存，缓存有useForm来提供，原因看useForm
+ * 缓存，缓存是为了解决同一个页面的多个相同类型的component的数据问题
  * 全局异常捕捉，当fetch中发生了错误以后，会自动捕捉错误
  */
 
@@ -61,29 +61,29 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
         return { basicDeps, otherDeps };
     })();
 
-    const request: UseQueryRequest = async (config: AxiosRequestConfig) => {
-        //当页面手动触发的时候，标记以前请求失败
-        ref.current++;
-        let current = ref.current;
-        setLoading(true);
-        let data = await axios(config);
-        setLoading(false);
-        if (current != ref.current) {
-            //发生了冲突
-            throw new UseQueryConcurrentError();
-        }
-        return data;
-    };
+    let request = useRequest();
 
     let manualFetch = useCallback(async () => {
         try {
-            await fetch(request);
+            const newRequest = async (config: AxiosRequestConfig) => {
+                ref.current++;
+                let current = ref.current;
+                setLoading(true);
+                let data = await request(config);
+                setLoading(false);
+                if (current != ref.current) {
+                    //发生了冲突
+                    throw new UseQueryConcurrentError();
+                }
+                return data;
+            };
+            await fetch(newRequest);
         } catch (e) {
             if (e instanceof UseQueryConcurrentError) {
                 //省略Conflit错误
                 return;
             }
-            console.error(e);
+            throw e;
         }
     }, []);
 

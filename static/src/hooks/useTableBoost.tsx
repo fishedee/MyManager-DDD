@@ -1,11 +1,11 @@
 import useForm from './useForm';
-import useQueryBoost from './useQueryBoost';
+import useQuery from './useQuery';
 import { createForm, Form, IFormProps } from '@formily/core';
 
 type TableBoostProps = {
     where: any;
     limit: { current: 1; pageSize: 10; total: 0 };
-    data: any;
+    list: any[];
 };
 function useTableBoost(
     ajaxUrl: string,
@@ -17,29 +17,31 @@ function useTableBoost(
             values: {
                 where: {},
                 limit: { current: 1, pageSize: 10, total: 0 },
-                data: {},
+                list: [],
             },
         },
         { cacheKey: 'table.' + ajaxUrl },
     );
-    const queryBoostInfo = useQueryBoost(
+    const queryBoostInfo = useQuery(
         async (request) => {
             let result: any = await request({
                 url: ajaxUrl,
                 method: 'GET',
                 data: {
                     ...formInfo.data.where,
-                    ...formInfo.data.limit,
+                    pageIndex:
+                        (formInfo.data.limit.current - 1) *
+                        formInfo.data.limit.pageSize,
+                    pageSize: formInfo.data.limit.pageSize,
                 },
             });
-            (formInfo.data.data = result.data),
+            (formInfo.data.list = result.data),
                 (formInfo.data.limit.total = result.count);
         },
         {
             refreshDeps: [
                 formInfo.data.limit.current,
                 formInfo.data.limit.pageSize,
-                formInfo.data.where,
             ],
         },
     );

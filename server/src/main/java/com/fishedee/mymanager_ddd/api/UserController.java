@@ -10,7 +10,9 @@ import com.fishedee.mymanager_ddd.infrastructure.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +20,8 @@ import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/user")
-public class UserController extends CurdController<Long, UserDTO, User, UserController.UserFilter> {
+@Slf4j
+public class UserController extends CurdController<User,Long, UserDTO, UserController.Filter> {
 
     @Autowired
     private UserRepository userRepository;
@@ -29,11 +32,29 @@ public class UserController extends CurdController<Long, UserDTO, User, UserCont
     }
 
     @Data
-    public static class UserFilter implements CurdFilterable {
+    public static class Filter implements CurdFilterable {
+        private String name;
+
+        private String remark;
+
         @Override
         public CurdFilter getFilter(){
             CurdFilterBuilder builder = new CurdFilterBuilder();
+            if( name != null){
+                builder.like("name","%"+name+"%");
+            }
+            if( remark != null){
+                builder.like("remark","%"+remark+"%");
+            }
             return builder;
         }
+    }
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    protected void postAdd(User user){
+        user.modPassword(passwordEncoder.encode("123"));
     }
 }

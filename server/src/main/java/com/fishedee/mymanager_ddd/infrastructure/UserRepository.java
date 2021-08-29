@@ -30,7 +30,7 @@ public class UserRepository extends CurdRepository<User,Long> implements UserChe
     public void checkNameWhenUpdated(Long id,String newName){
         List<User> userList = this.getByName(newName);
         if( userList.size() != 0 &&
-            userList.get(0).getId().longValue() == id.longValue()){
+            userList.get(0).getId().longValue() != id.longValue()){
             throw new WebBoostException(1,"重复的名字:"+newName,null);
         }
     }
