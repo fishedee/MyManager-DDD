@@ -18,11 +18,8 @@ import SelectIsEnabled from './SelectIsEnabled';
 import SelectRole from './SelectRole';
 import Link from '@/components/Link';
 import ProCard from '@ant-design/pro-card';
-import useForm from '@/hooks/useForm';
-import { useHistory, useLocation } from 'umi';
-import useQuery from '@/hooks/useQuery';
-import useErrorCatch from '@/hooks/Result';
 import useDetailBoost from '@/hooks/useDetailBoost';
+import { Modal } from 'antd';
 
 const SchemaField = createSchemaField({
     components: {
@@ -42,14 +39,37 @@ const SchemaField = createSchemaField({
 });
 
 const UsetDetail: React.FC<any> = observer((props) => {
-    const { save, form, loading } = useDetailBoost(
+    const request = useRequest();
+    const { mod, form, data, loading, id } = useDetailBoost(
         '/user/get',
         {},
         {
-            add: '/user/add',
             mod: '/user/mod',
         },
     );
+    const save = async () => {
+        if (id) {
+            mod();
+        } else {
+            let result = await request({
+                method: 'POST',
+                url: '/user/add',
+                data: {
+                    id: id,
+                    ...data.detail,
+                },
+            });
+            if (result.status == 'fail') {
+                return;
+            }
+            Modal.success({
+                content: '添加用户成功，初始密码为123',
+                onOk: () => {
+                    history.back();
+                },
+            });
+        }
+    };
     const formSchema = (
         <SchemaField>
             <SchemaField.Object name="detail">

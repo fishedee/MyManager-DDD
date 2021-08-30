@@ -3,6 +3,8 @@ import { useHistory, useLocation } from 'umi';
 import { Fragment, useState } from 'react';
 import route from './route';
 import { PageActionContext } from '@/components/MyPageContainer';
+import { Avatar, Dropdown, Menu } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 
 export default (props) => {
     const history = useHistory();
@@ -17,6 +19,20 @@ export default (props) => {
         fixedHeader: true,
     };
     const [state, setState] = useState(0);
+    const menu = (
+        <Menu>
+            <Menu.Item>个人信息</Menu.Item>
+        </Menu>
+    );
+
+    const rightContent = (
+        <Dropdown overlay={menu}>
+            <span>
+                <Avatar size="small" icon={<UserOutlined />} />
+                <span style={{ marginLeft: '10px' }}>{'123'}</span>
+            </span>
+        </Dropdown>
+    );
     return (
         <PageActionContext.Provider
             value={{
@@ -33,7 +49,9 @@ export default (props) => {
             >
                 <ProLayout
                     headerContentRender={false}
-                    rightContentRender={false}
+                    rightContentRender={() => {
+                        return rightContent;
+                    }}
                     //使用location来active对应的menu
                     route={route}
                     location={{

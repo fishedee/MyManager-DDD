@@ -105,6 +105,8 @@ function useDetailBoost(
         mod,
         del,
         save,
+        id,
+        history,
     };
 }
 

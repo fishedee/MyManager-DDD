@@ -2,6 +2,7 @@ package com.fishedee.mymanager_ddd;
 
 import com.fishedee.jpa_boost.lint.EnableJPALint;
 import com.fishedee.mymanager_ddd.framework.MyLinter;
+import com.fishedee.util_boost.utils.BaseEntityType;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAspectJAutoProxy(exposeProxy = true)
 @EnableJPALint(
         allowIdHaveGeneratedValue = true,
+        superEntityClass = BaseEntityType.class,
         extraLinters = {
                 MyLinter.class,
         }

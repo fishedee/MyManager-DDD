@@ -18,6 +18,10 @@ export default defineConfig({
         //compact: true,
     },
     proxy: {
+        '/login': {
+            target: 'http://localhost:9191',
+            changeOrigin: true,
+        },
         '/user': {
             target: 'http://localhost:9191',
             changeOrigin: true,

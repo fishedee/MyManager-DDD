@@ -61,7 +61,7 @@ create table card(
                        name char(32) not null,
                        bank char(32) not null,
                        card varchar(32) not null,
-                       money integer not null,
+                       money decimal(14,2) not null,
                        remark varchar(128) not null,
                        create_time timestamp not null,
                        modify_time timestamp not null,

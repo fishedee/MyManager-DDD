@@ -7,12 +7,14 @@ import com.fishedee.mymanager_ddd.business.User;
 import com.fishedee.mymanager_ddd.business.UserDTO;
 import com.fishedee.mymanager_ddd.framework.CurdController;
 import com.fishedee.mymanager_ddd.infrastructure.UserRepository;
+import com.fishedee.util_boost.annotation.TransactionalForWrite;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -56,5 +58,12 @@ public class UserController extends CurdController<User,Long, UserDTO, UserContr
     @Override
     protected void postAdd(User user){
         user.modPassword(passwordEncoder.encode("123"));
+    }
+
+    @PostMapping("/modPassword")
+    @TransactionalForWrite
+    public void modPassword(Long userId,String password){
+        User user = this.userRepository.get(userId);
+        user.modPassword(passwordEncoder.encode(password));
     }
 }
