@@ -16,6 +16,8 @@ import useRequest from '@/hooks/useRequest';
 import 'antd/dist/antd.css';
 import { useModel } from '@/.umi/plugin-model/useModel';
 import { history } from '@/.umi/core/history';
+import useQuery from '@/hooks/useQuery';
+import { useEffect, useMemo } from 'react';
 
 const Tip = () => {
     return <span>{'七天免登录'}</span>;
@@ -44,8 +46,13 @@ export default function IndexPage() {
         },
     });
     const request = useRequest();
+    useEffect(() => {
+        request({
+            method: 'GET',
+            url: '/login/islogin',
+        });
+    }, []);
     const submit = async () => {
-        console.log(data);
         let result = await request({
             method: 'POST',
             url: '/login/login',

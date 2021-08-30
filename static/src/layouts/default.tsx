@@ -1,12 +1,16 @@
 import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
-import { useHistory, useLocation } from 'umi';
+import { useHistory, useLocation, useModel } from 'umi';
 import { Fragment, useState } from 'react';
 import route from './route';
 import { PageActionContext } from '@/components/MyPageContainer';
-import { Avatar, Dropdown, Menu } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
-
+import { Avatar, Dropdown, Menu, Space } from 'antd';
+import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import style from './default.less';
+import useRequest from '@/hooks/useRequest';
 export default (props) => {
+    const { initialState, loading, error, refresh, setInitialState } = useModel(
+        '@@initialState',
+    );
     const history = useHistory();
     const location = useLocation();
     const mixModeSetting = {
@@ -19,19 +23,41 @@ export default (props) => {
         fixedHeader: true,
     };
     const [state, setState] = useState(0);
+    const request = useRequest();
+    const logout = async () => {
+        let result = await request({
+            method: 'POST',
+            url: '/login/logout',
+        });
+        if (result.status == 'fail') {
+            return;
+        }
+        history.push('/login');
+    };
     const menu = (
         <Menu>
-            <Menu.Item>个人信息</Menu.Item>
+            <Menu.Item key="center">
+                <UserOutlined style={{ marginRight: '10px' }} />
+                个人中心
+            </Menu.Item>
+            <Menu.Divider />
+            <Menu.Item key="logout" onClick={logout}>
+                <LogoutOutlined style={{ marginRight: '10px' }} />
+                退出登录
+            </Menu.Item>
         </Menu>
     );
-
     const rightContent = (
-        <Dropdown overlay={menu}>
-            <span>
-                <Avatar size="small" icon={<UserOutlined />} />
-                <span style={{ marginLeft: '10px' }}>{'123'}</span>
-            </span>
-        </Dropdown>
+        <Space style={{ marginRight: '20px' }}>
+            <Dropdown overlay={menu} overlayClassName={style.container}>
+                <span>
+                    <Avatar size="small" icon={<UserOutlined />} />
+                    <span style={{ marginLeft: '10px' }}>
+                        {initialState?.currentUser?.name}
+                    </span>
+                </span>
+            </Dropdown>
+        </Space>
     );
     return (
         <PageActionContext.Provider
