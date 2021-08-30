@@ -22,25 +22,19 @@ import useForm from '@/hooks/useForm';
 import { useHistory, useLocation } from 'umi';
 import useQuery from '@/hooks/useQuery';
 import useErrorCatch from '@/hooks/useErrorCatch';
+import { createForm } from '@formily/core';
 
 const SchemaField = createSchemaField({
     components: {
-        Input,
         Select,
         FormItem,
-        FormLayout,
-        Space,
-        Button,
-        Submit,
-        Table,
-        SelectIsEnabled,
-        SelectRole,
-        SpaceDivider,
-        Link,
     },
 });
 
+const form = createForm();
+
 const UsetDetail: React.FC<any> = observer((props) => {
+    /*
     const location = useLocation();
     const history = useHistory();
     const id = location?.query?.id;
@@ -52,6 +46,8 @@ const UsetDetail: React.FC<any> = observer((props) => {
             cacheKey: id ? undefined : 'form.user_' + id,
         },
     );
+*/
+    /*
     const { fetch, loading } = useQuery(
         async (request) => {
             console.log('id', id);
@@ -91,6 +87,7 @@ const UsetDetail: React.FC<any> = observer((props) => {
             history.goBack();
         }
     });
+    */
     const formSchema = (
         <SchemaField>
             <SchemaField.Object name="detail">
@@ -107,15 +104,19 @@ const UsetDetail: React.FC<any> = observer((props) => {
                     title="角色"
                     required={true}
                     x-decorator="FormItem"
-                    x-component="SelectRole"
+                    x-component="Select"
                     x-component-props={{}}
                 />
                 <SchemaField.String
                     name="isEnabled"
                     title="是否可用"
                     required={true}
+                    enum={[
+                        { label: '可用', value: 'ENABLE' },
+                        { label: '不可用', value: 'DISABLE' },
+                    ]}
                     x-decorator="FormItem"
-                    x-component="SelectIsEnabled"
+                    x-component="Select"
                     x-component-props={{}}
                 />
                 <SchemaField.String
@@ -129,16 +130,27 @@ const UsetDetail: React.FC<any> = observer((props) => {
         </SchemaField>
     );
     return (
-        <Form form={form} layout="vertical">
-            <MyPageContainer title={'用户详情'} loading={loading}>
-                <ProCard>
-                    {formSchema}
-                    <FormButtonGroup gutter={10}>
-                        <Submit onSubmit={save}>提交</Submit>
-                        <Reset>重置</Reset>
-                    </FormButtonGroup>
-                </ProCard>
-            </MyPageContainer>
+        <Form form={form}>
+            <SchemaField>
+                <SchemaField.Number
+                    name="select"
+                    title="选择框"
+                    x-decorator="FormItem"
+                    x-component="Select"
+                    enum={[
+                        { label: '选项1', value: 1 },
+                        { label: '选项2', value: 2 },
+                    ]}
+                    x-component-props={{
+                        style: {
+                            width: 120,
+                        },
+                    }}
+                />
+            </SchemaField>
+            <FormButtonGroup>
+                <Submit onSubmit={console.log}>提交</Submit>
+            </FormButtonGroup>
         </Form>
     );
 });

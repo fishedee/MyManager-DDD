@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { observe } from '@formily/reactive';
 import { AxiosRequestConfig } from 'axios';
 import useRequest from './useRequest';
+import useErrorCatch from './useErrorCatch';
 
 export type UseQueryRequest = (config: AxiosRequestConfig) => Promise<any>;
 
@@ -63,29 +64,21 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
 
     let request = useRequest();
 
-    let manualFetch = useCallback(async () => {
-        try {
-            const newRequest = async (config: AxiosRequestConfig) => {
-                ref.current++;
-                let current = ref.current;
-                setLoading(true);
-                let data = await request(config);
-                setLoading(false);
-                if (current != ref.current) {
-                    //发生了冲突
-                    throw new UseQueryConcurrentError();
-                }
-                return data;
-            };
-            await fetch(newRequest);
-        } catch (e) {
-            if (e instanceof UseQueryConcurrentError) {
-                //省略Conflit错误
-                return;
+    let manualFetch = useErrorCatch(async () => {
+        const newRequest = async (config: AxiosRequestConfig) => {
+            ref.current++;
+            let current = ref.current;
+            setLoading(true);
+            let data = await request(config);
+            setLoading(false);
+            if (current != ref.current) {
+                //发生了冲突
+                throw new UseQueryConcurrentError();
             }
-            throw e;
-        }
-    }, []);
+            return data;
+        };
+        await fetch(newRequest);
+    });
 
     useEffect(() => {
         //对于复杂对象，使用observe来做监听

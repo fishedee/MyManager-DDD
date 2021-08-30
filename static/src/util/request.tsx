@@ -20,13 +20,19 @@ const codeMessage = new Map<number, string>([
     [504, '网关超时。'],
 ]);
 
+export class RequestError extends Error {
+    constructor(msg: string) {
+        super(msg);
+    }
+}
+
 function checkStatus(response: AxiosResponse) {
     if (response.status >= 200 && response.status < 300) {
         return;
     }
     const errortext: string =
         codeMessage.get(response.status) || response.statusText;
-    const error: any = new Error(
+    const error = new RequestError(
         `请求错误 ${response.status}: ${response.request}：${errortext}`,
     );
     throw error;
@@ -36,7 +42,7 @@ function checkBody(response: ResponseDataType) {
     if (response.code == 0) {
         return;
     }
-    const error: any = new Error(response.msg);
+    const error = new RequestError(response.msg);
     throw error;
 }
 
