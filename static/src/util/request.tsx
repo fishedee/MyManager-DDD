@@ -1,6 +1,5 @@
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
-
-type AxoisFetch = (config: AxiosRequestConfig) => AxiosPromise;
+import Result, { ResultFail, ResultSuccess } from '@/hooks/Result';
+import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 
 const codeMessage = new Map<number, string>([
     [200, '服务器成功返回请求的数。'],
@@ -20,30 +19,37 @@ const codeMessage = new Map<number, string>([
     [504, '网关超时。'],
 ]);
 
-export class RequestError extends Error {
-    constructor(msg: string) {
-        super(msg);
-    }
-}
-
-function checkStatus(response: AxiosResponse) {
+function checkStatus(response: AxiosResponse): Result<any> {
     if (response.status >= 200 && response.status < 300) {
-        return;
+        return {
+            status: 'success',
+            data: 0,
+        };
     }
     const errortext: string =
         codeMessage.get(response.status) || response.statusText;
-    const error = new RequestError(
-        `请求错误 ${response.status}: ${response.request}：${errortext}`,
-    );
-    throw error;
+
+    return {
+        status: 'fail',
+        code: 1,
+        error: new Error(
+            `请求错误 ${response.status}: ${response.request}：${errortext}`,
+        ),
+    };
 }
 
-function checkBody(response: ResponseDataType) {
+function checkBody(response: ResponseDataType): Result<any> {
     if (response.code == 0) {
-        return;
+        return {
+            status: 'success',
+            data: 0,
+        };
     }
-    const error = new RequestError(response.msg);
-    throw error;
+    return {
+        status: 'fail',
+        code: 1,
+        error: new Error(response.msg),
+    };
 }
 
 function getCookie(name: string) {
@@ -65,15 +71,9 @@ export type ResponseDataType = {
     data: any;
 };
 
-export type RequestType = (
-    fetch: AxoisFetch,
-    options: AxiosRequestConfig,
-) => Promise<any>;
+export type RequestType = (options: AxiosRequestConfig) => Promise<Result<any>>;
 
-const request: RequestType = async (
-    fetch: AxoisFetch,
-    options: AxiosRequestConfig,
-) => {
+const request: RequestType = async (options: AxiosRequestConfig) => {
     //添加csrf头部
     if (!options.headers) {
         options.headers = {};
@@ -93,12 +93,30 @@ const request: RequestType = async (
         options.data = undefined;
     }
 
-    let response = await fetch(options);
-    checkStatus(response);
+    try {
+        let response = await axios(options);
 
-    let data: ResponseDataType = response.data;
-    checkBody(data);
+        let result = checkStatus(response);
+        if (result.status == 'fail') {
+            return result;
+        }
 
-    return data.data;
+        let data: ResponseDataType = response.data;
+        result = checkBody(data);
+        if (result.status == 'fail') {
+            return result;
+        }
+
+        return {
+            status: 'success',
+            data: data.data,
+        };
+    } catch (e) {
+        return {
+            status: 'fail',
+            code: 1,
+            error: e,
+        };
+    }
 };
 export default request;

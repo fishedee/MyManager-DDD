@@ -1,22 +1,40 @@
-import axios, { AxiosRequestConfig, AxiosPromise } from 'axios';
-import useErrorCatch from './useErrorCatch';
+import axios, { AxiosRequestConfig } from 'axios';
+import Result, { ResultFail } from './Result';
 
-type AxoisFetch = (config: AxiosRequestConfig) => AxiosPromise;
-
-export type RequestType = (
-    fetch: AxoisFetch,
+export type RequestHandler = (
     options: AxiosRequestConfig,
-) => Promise<any>;
+) => Promise<Result<any>>;
 
-let requestBoostRequest: RequestType = (
-    fetch: AxoisFetch,
-    options: AxiosRequestConfig,
-) => {
-    return fetch(options);
+type ErrorHandler = (result: ResultFail) => void;
+
+let requestErrorHandler: ErrorHandler = (result: ResultFail) => {
+    console.error(result.error);
 };
 
-export function replaceRequest(request: RequestType) {
-    requestBoostRequest = request;
+export function replaceErrorHandler(handler: ErrorHandler) {
+    requestErrorHandler = handler;
+}
+
+let requestHandler: RequestHandler = async (
+    config: AxiosRequestConfig,
+): Promise<Result<any>> => {
+    try {
+        let result: any = await axios(config);
+        return {
+            status: 'success',
+            data: result,
+        };
+    } catch (e: any) {
+        return {
+            status: 'fail',
+            code: 1,
+            error: e,
+        };
+    }
+};
+
+export function replaceRequestHandler(handler: RequestHandler) {
+    requestHandler = handler;
 }
 export type UseRequestOptions = {};
 
@@ -26,10 +44,17 @@ export type UseRequestOptions = {};
  * 默认的全局错误捕捉
  */
 function useRequest(options?: UseRequestOptions) {
-    const requestManual = useErrorCatch(async (config: AxiosRequestConfig) => {
-        return await requestBoostRequest(axios, config);
-    });
-    return requestManual;
+    const newHandler: RequestHandler = async (
+        config: AxiosRequestConfig,
+    ): Promise<Result<any>> => {
+        let result = await requestHandler(config);
+        if (result.status == 'success') {
+            return result;
+        }
+        requestErrorHandler(result);
+        return result;
+    };
+    return newHandler;
 }
 
 export default useRequest;

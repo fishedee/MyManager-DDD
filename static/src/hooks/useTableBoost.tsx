@@ -24,7 +24,7 @@ function useTableBoost(
     );
     const queryBoostInfo = useQuery(
         async (request) => {
-            let result: any = await request({
+            let result = await request({
                 url: ajaxUrl,
                 method: 'GET',
                 data: {
@@ -35,8 +35,11 @@ function useTableBoost(
                     pageSize: formInfo.data.limit.pageSize,
                 },
             });
-            (formInfo.data.list = result.data),
-                (formInfo.data.limit.total = result.count);
+            if (result.status == 'fail') {
+                return;
+            }
+            (formInfo.data.list = result.data.data),
+                (formInfo.data.limit.total = result.data.count);
         },
         {
             refreshDeps: [

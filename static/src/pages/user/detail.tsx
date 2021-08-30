@@ -21,20 +21,26 @@ import ProCard from '@ant-design/pro-card';
 import useForm from '@/hooks/useForm';
 import { useHistory, useLocation } from 'umi';
 import useQuery from '@/hooks/useQuery';
-import useErrorCatch from '@/hooks/useErrorCatch';
-import { createForm } from '@formily/core';
+import useErrorCatch from '@/hooks/Result';
 
 const SchemaField = createSchemaField({
     components: {
+        Input,
         Select,
         FormItem,
+        FormLayout,
+        Space,
+        Button,
+        Submit,
+        Table,
+        SelectIsEnabled,
+        SelectRole,
+        SpaceDivider,
+        Link,
     },
 });
 
-const form = createForm();
-
 const UsetDetail: React.FC<any> = observer((props) => {
-    /*
     const location = useLocation();
     const history = useHistory();
     const id = location?.query?.id;
@@ -46,11 +52,8 @@ const UsetDetail: React.FC<any> = observer((props) => {
             cacheKey: id ? undefined : 'form.user_' + id,
         },
     );
-*/
-    /*
     const { fetch, loading } = useQuery(
         async (request) => {
-            console.log('id', id);
             let result = await request({
                 method: 'GET',
                 url: '/user/get',
@@ -58,16 +61,19 @@ const UsetDetail: React.FC<any> = observer((props) => {
                     id: id,
                 },
             });
-            data.detail = result;
+            if (result.status == 'fail') {
+                return;
+            }
+            data.detail = result.data;
         },
         {
             firstDidNotRefresh: !id,
         },
     );
     const request = useRequest();
-    const save = useErrorCatch(async () => {
+    const save = async () => {
         if (id) {
-            await request({
+            let result = await request({
                 method: 'POST',
                 url: '/user/mod',
                 data: {
@@ -75,19 +81,24 @@ const UsetDetail: React.FC<any> = observer((props) => {
                     ...data.detail,
                 },
             });
+            if (result.status == 'fail') {
+                return;
+            }
             history.goBack();
         } else {
-            await request({
+            let result = await request({
                 method: 'POST',
                 url: '/user/add',
                 data: {
                     ...data.detail,
                 },
             });
+            if (result.status == 'fail') {
+                return;
+            }
             history.goBack();
         }
-    });
-    */
+    };
     const formSchema = (
         <SchemaField>
             <SchemaField.Object name="detail">
@@ -104,19 +115,15 @@ const UsetDetail: React.FC<any> = observer((props) => {
                     title="角色"
                     required={true}
                     x-decorator="FormItem"
-                    x-component="Select"
+                    x-component="SelectRole"
                     x-component-props={{}}
                 />
                 <SchemaField.String
                     name="isEnabled"
                     title="是否可用"
                     required={true}
-                    enum={[
-                        { label: '可用', value: 'ENABLE' },
-                        { label: '不可用', value: 'DISABLE' },
-                    ]}
                     x-decorator="FormItem"
-                    x-component="Select"
+                    x-component="SelectIsEnabled"
                     x-component-props={{}}
                 />
                 <SchemaField.String
@@ -130,27 +137,16 @@ const UsetDetail: React.FC<any> = observer((props) => {
         </SchemaField>
     );
     return (
-        <Form form={form}>
-            <SchemaField>
-                <SchemaField.Number
-                    name="select"
-                    title="选择框"
-                    x-decorator="FormItem"
-                    x-component="Select"
-                    enum={[
-                        { label: '选项1', value: 1 },
-                        { label: '选项2', value: 2 },
-                    ]}
-                    x-component-props={{
-                        style: {
-                            width: 120,
-                        },
-                    }}
-                />
-            </SchemaField>
-            <FormButtonGroup>
-                <Submit onSubmit={console.log}>提交</Submit>
-            </FormButtonGroup>
+        <Form form={form} layout="vertical">
+            <MyPageContainer title={'用户详情'} loading={loading}>
+                <ProCard>
+                    {formSchema}
+                    <FormButtonGroup gutter={10}>
+                        <Submit onSubmit={save}>提交</Submit>
+                        <Reset>重置</Reset>
+                    </FormButtonGroup>
+                </ProCard>
+            </MyPageContainer>
         </Form>
     );
 });

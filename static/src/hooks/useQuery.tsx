@@ -1,11 +1,13 @@
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { observe } from '@formily/reactive';
 import { AxiosRequestConfig } from 'axios';
 import useRequest from './useRequest';
-import useErrorCatch from './useErrorCatch';
+import Result, { ResultSuccess, ResultFail } from './Result';
 
-export type UseQueryRequest = (config: AxiosRequestConfig) => Promise<any>;
+export type UseQueryRequest = (
+    config: AxiosRequestConfig,
+) => Promise<Result<any>>;
 
 export type UseQueryFetch = (data: UseQueryRequest) => Promise<void> | void;
 
@@ -32,7 +34,6 @@ interface IDispose {
  *      与react的不同，这里的数据检查同时支持了基础数据检查，与复杂数据检查，而不是简单的引用检查，这样性能更好，也更使用。我们可以深度侦听整个filter数据是否变化来触发refresh
  * 按钮刷新，其他场景，通过onClick等方式的刷新，所以我们对外提供了fetch接口，onClick直接绑定到这个fetch接口上就可以了
  * 缓存，缓存是为了解决同一个页面的多个相同类型的component的数据问题
- * 全局异常捕捉，当fetch中发生了错误以后，会自动捕捉错误
  */
 
 function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
@@ -64,21 +65,26 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
 
     let request = useRequest();
 
-    let manualFetch = useErrorCatch(async () => {
-        const newRequest = async (config: AxiosRequestConfig) => {
+    let manualFetch = async () => {
+        const newRequest = async (
+            config: AxiosRequestConfig,
+        ): Promise<Result<any>> => {
             ref.current++;
             let current = ref.current;
             setLoading(true);
-            let data = await request(config);
+            let result = await request(config);
             setLoading(false);
             if (current != ref.current) {
-                //发生了冲突
-                throw new UseQueryConcurrentError();
+                return {
+                    status: 'fail',
+                    code: 1,
+                    error: new Error('Conflit Error'),
+                };
             }
-            return data;
+            return result;
         };
         await fetch(newRequest);
-    });
+    };
 
     useEffect(() => {
         //对于复杂对象，使用observe来做监听

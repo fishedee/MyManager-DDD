@@ -19,7 +19,6 @@ import Link from '@/components/Link';
 import { Field, onFieldReact } from '@formily/core';
 import ProCard from '@ant-design/pro-card';
 import { useHistory } from 'react-router-dom';
-import useErrorCatch from '@/hooks/useErrorCatch';
 
 const SchemaField = createSchemaField({
     components: {
@@ -46,16 +45,19 @@ const UserList: React.FC<any> = observer((props) => {
             onFieldReact('list.*.operatorion.del', (f) => {
                 const field = f as Field;
                 const id = field.query('..id').value();
-                field.componentProps.onClick = useErrorCatch(async () => {
-                    await request({
+                field.componentProps.onClick = async () => {
+                    let result = await request({
                         url: '/user/del',
                         method: 'POST',
                         data: {
                             id: id,
                         },
                     });
+                    if (result.status == 'fail') {
+                        return;
+                    }
                     fetch();
-                });
+                };
             });
             onFieldReact('list.*.operatorion.edit', (f) => {
                 const field = f as Field;
