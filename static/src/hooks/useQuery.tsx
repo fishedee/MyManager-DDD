@@ -4,6 +4,7 @@ import { observe } from '@formily/reactive';
 import { AxiosRequestConfig } from 'axios';
 import useRequest from './useRequest';
 import Result, { ResultSuccess, ResultFail } from './Result';
+import { throttle } from 'underscore';
 
 export type UseQueryRequest = (
     config: AxiosRequestConfig,
@@ -87,10 +88,12 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
     };
 
     useEffect(() => {
+        const throttleFetch = throttle(manualFetch, 300);
+
         //对于复杂对象，使用observe来做监听
         let observeDispose: IDispose[] = [];
         for (let i = 0; i != deps.otherDeps.length; i++) {
-            let dispose = observe(deps.otherDeps[i], manualFetch);
+            let dispose = observe(deps.otherDeps[i], throttleFetch);
             observeDispose.push(dispose);
         }
 

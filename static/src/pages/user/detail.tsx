@@ -22,6 +22,7 @@ import useForm from '@/hooks/useForm';
 import { useHistory, useLocation } from 'umi';
 import useQuery from '@/hooks/useQuery';
 import useErrorCatch from '@/hooks/Result';
+import useDetailBoost from '@/hooks/useDetailBoost';
 
 const SchemaField = createSchemaField({
     components: {
@@ -41,64 +42,14 @@ const SchemaField = createSchemaField({
 });
 
 const UsetDetail: React.FC<any> = observer((props) => {
-    const location = useLocation();
-    const history = useHistory();
-    const id = location?.query?.id;
-    let { form, data } = useForm(
+    const { save, form, loading } = useDetailBoost(
+        '/user/get',
+        {},
         {
-            values: { detail: {} },
-        },
-        {
-            cacheKey: id ? undefined : 'form.user_' + id,
+            add: '/user/add',
+            mod: '/user/mod',
         },
     );
-    const { fetch, loading } = useQuery(
-        async (request) => {
-            let result = await request({
-                method: 'GET',
-                url: '/user/get',
-                data: {
-                    id: id,
-                },
-            });
-            if (result.status == 'fail') {
-                return;
-            }
-            data.detail = result.data;
-        },
-        {
-            firstDidNotRefresh: !id,
-        },
-    );
-    const request = useRequest();
-    const save = async () => {
-        if (id) {
-            let result = await request({
-                method: 'POST',
-                url: '/user/mod',
-                data: {
-                    id: id,
-                    ...data.detail,
-                },
-            });
-            if (result.status == 'fail') {
-                return;
-            }
-            history.goBack();
-        } else {
-            let result = await request({
-                method: 'POST',
-                url: '/user/add',
-                data: {
-                    ...data.detail,
-                },
-            });
-            if (result.status == 'fail') {
-                return;
-            }
-            history.goBack();
-        }
-    };
     const formSchema = (
         <SchemaField>
             <SchemaField.Object name="detail">

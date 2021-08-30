@@ -3,20 +3,25 @@ import useQuery from './useQuery';
 import { createForm, Form, IFormProps } from '@formily/core';
 
 type TableBoostProps = {
-    where: any;
-    limit: { current: 1; pageSize: 10; total: 0 };
+    filter: any;
+    paginaction: { current: 1; pageSize: 10; total: 0 };
     list: any[];
+};
+
+type TableBoostOptions = {
+    refreshOnFilterChange?: boolean;
 };
 function useTableBoost(
     ajaxUrl: string,
     form: IFormProps<TableBoostProps> = {},
+    options?: TableBoostOptions,
 ) {
     const formInfo = useForm(
         {
             ...form,
             values: {
-                where: {},
-                limit: { current: 1, pageSize: 10, total: 0 },
+                filter: {},
+                paginaction: { current: 1, pageSize: 10, total: 0 },
                 list: [],
             },
         },
@@ -28,23 +33,26 @@ function useTableBoost(
                 url: ajaxUrl,
                 method: 'GET',
                 data: {
-                    ...formInfo.data.where,
+                    ...formInfo.data.filter,
                     pageIndex:
-                        (formInfo.data.limit.current - 1) *
-                        formInfo.data.limit.pageSize,
-                    pageSize: formInfo.data.limit.pageSize,
+                        (formInfo.data.paginaction.current - 1) *
+                        formInfo.data.paginaction.pageSize,
+                    pageSize: formInfo.data.paginaction.pageSize,
                 },
             });
             if (result.status == 'fail') {
                 return;
             }
             (formInfo.data.list = result.data.data),
-                (formInfo.data.limit.total = result.data.count);
+                (formInfo.data.paginaction.total = result.data.count);
         },
         {
             refreshDeps: [
-                formInfo.data.limit.current,
-                formInfo.data.limit.pageSize,
+                formInfo.data.paginaction.current,
+                formInfo.data.paginaction.pageSize,
+                options?.refreshOnFilterChange
+                    ? formInfo.data.filter
+                    : undefined,
             ],
         },
     );

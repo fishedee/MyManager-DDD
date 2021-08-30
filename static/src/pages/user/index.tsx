@@ -40,41 +40,47 @@ const SchemaField = createSchemaField({
 const UserList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
-    const { form, data, fetch, loading } = useTableBoost('/user/search', {
-        effects: () => {
-            onFieldReact('list.*.operatorion.del', (f) => {
-                const field = f as Field;
-                const id = field.query('..id').value();
-                field.componentProps.onClick = async () => {
-                    let result = await request({
-                        url: '/user/del',
-                        method: 'POST',
-                        data: {
+    const { form, data, fetch, loading } = useTableBoost(
+        '/user/search',
+        {
+            effects: () => {
+                onFieldReact('list.*.operatorion.del', (f) => {
+                    const field = f as Field;
+                    const id = field.query('..id').value();
+                    field.componentProps.onClick = async () => {
+                        let result = await request({
+                            url: '/user/del',
+                            method: 'POST',
+                            data: {
+                                id: id,
+                            },
+                        });
+                        if (result.status == 'fail') {
+                            return;
+                        }
+                        fetch();
+                    };
+                });
+                onFieldReact('list.*.operatorion.edit', (f) => {
+                    const field = f as Field;
+                    const id = field.query('..id').value();
+                    field.componentProps.to = {
+                        pathname: '/user/detail',
+                        query: {
                             id: id,
                         },
-                    });
-                    if (result.status == 'fail') {
-                        return;
-                    }
-                    fetch();
-                };
-            });
-            onFieldReact('list.*.operatorion.edit', (f) => {
-                const field = f as Field;
-                const id = field.query('..id').value();
-                field.componentProps.to = {
-                    pathname: '/user/detail',
-                    query: {
-                        id: id,
-                    },
-                };
-            });
+                    };
+                });
+            },
         },
-    });
+        {
+            refreshOnFilterChange: true,
+        },
+    );
     const querySchema = (
         <SchemaField>
             <SchemaField.Object
-                name="where"
+                name="filter"
                 x-decorator="FormGrid"
                 x-decorator-props={{
                     minColumns: 3,
@@ -104,7 +110,7 @@ const UserList: React.FC<any> = observer((props) => {
                 name="list"
                 x-component="Table"
                 x-component-props={{
-                    paginaction: data.limit,
+                    paginaction: data.paginaction,
                     paginationProps: {
                         showQuickJumper: true,
                         showSizeChanger: true,
@@ -195,12 +201,9 @@ const UserList: React.FC<any> = observer((props) => {
                                     justifyContent: 'flex-end',
                                 }}
                             >
-                                <Button type="primary" onClick={fetch}>
-                                    查询
-                                </Button>
                                 <Button
                                     onClick={() => {
-                                        data.where = {};
+                                        data.filter = {};
                                         fetch();
                                     }}
                                 >
