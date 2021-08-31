@@ -18,6 +18,7 @@ import { useModel } from '@/.umi/plugin-model/useModel';
 import { history } from '@/.umi/core/history';
 import useQuery from '@/hooks/useQuery';
 import { useEffect, useMemo } from 'react';
+import { clearAllFormCache } from '@/hooks/useForm';
 
 const Tip = () => {
     return <span>{'七天免登录'}</span>;
@@ -65,6 +66,7 @@ export default function IndexPage() {
             ...initialState,
             currentUser: result.data,
         });
+        clearAllFormCache('table');
         history.push('/user');
     };
     return (

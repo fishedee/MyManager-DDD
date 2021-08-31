@@ -1,6 +1,6 @@
 import { replaceErrorHandler, replaceRequestHandler } from './hooks/useRequest';
 import request from './util/request';
-import { notification } from 'antd';
+import { notification, Modal } from 'antd';
 import { PageLoading } from '@ant-design/pro-layout';
 import User from './util/user';
 import Result from './hooks/Result';
@@ -9,11 +9,18 @@ import { history } from 'umi';
 replaceRequestHandler(request);
 replaceErrorHandler((resultFail) => {
     console.error(resultFail.error);
-    //Ajax错误
-    notification.error({
-        message: '请求错误',
-        description: resultFail.error.message,
-    });
+    if (resultFail.code == 403) {
+        //权限错误
+        Modal.error({
+            content: '你没有权限执行此操作',
+        });
+    } else {
+        //Ajax错误
+        notification.error({
+            message: '请求错误',
+            description: resultFail.error.message,
+        });
+    }
 });
 
 /** 获取用户信息比较慢的时候会展示一个 loading */

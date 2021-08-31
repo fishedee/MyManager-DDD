@@ -10,6 +10,12 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 public class WebSecurityConfig extends SecurityBoostConfiguration {
     @Override
     protected void configureAuthorizeRequests(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("*").permitAll();
+        http.authorizeRequests()
+                .antMatchers("/").permitAll()
+                .antMatchers("/favicon.ico").permitAll()
+                .antMatchers("/index.html").permitAll()
+                .antMatchers("/login/*").permitAll()
+                .antMatchers("/user/*").hasAuthority("ADMIN")
+                .anyRequest().authenticated();
     }
 }

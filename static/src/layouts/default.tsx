@@ -36,9 +36,14 @@ export default (props) => {
     };
     const menu = (
         <Menu>
-            <Menu.Item key="center">
+            <Menu.Item
+                key="center"
+                onClick={() => {
+                    history.push('/user/modMyPassword');
+                }}
+            >
                 <UserOutlined style={{ marginRight: '10px' }} />
-                个人中心
+                修改密码
             </Menu.Item>
             <Menu.Divider />
             <Menu.Item key="logout" onClick={logout}>

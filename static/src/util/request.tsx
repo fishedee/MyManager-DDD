@@ -112,10 +112,17 @@ const request: RequestType = async (options: AxiosRequestConfig) => {
             data: data.data,
         };
     } catch (e) {
+        if (e.message.indexOf('403') != -1) {
+            return {
+                status: 'fail',
+                code: 403,
+                error: new Error(e.message),
+            };
+        }
         return {
             status: 'fail',
             code: 1,
-            error: e,
+            error: new Error(e.message),
         };
     }
 };

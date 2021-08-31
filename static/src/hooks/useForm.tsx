@@ -4,13 +4,17 @@ import { useMemo } from 'react';
 
 let formCache = new Map<string, object>();
 
-function clearFormCacheByKeyStartsWith(prefixKey: string) {
+export function clearFormCacheByKeyStartsWith(prefixKey: string) {
     let cacheKeys = formCache.keys();
     for (let key in cacheKeys) {
         if (key.startsWith(prefixKey)) {
             formCache.delete(key);
         }
     }
+}
+
+export function clearAllFormCache() {
+    formCache.clear();
 }
 
 type useFormOption = {
