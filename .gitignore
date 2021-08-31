@@ -26,3 +26,5 @@ target
 .idea
 .DS_Store
 node_modules
+MyManager-DDD
+MyManager-DDD.tar.gz

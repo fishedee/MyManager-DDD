@@ -74,6 +74,14 @@ export type ResponseDataType = {
 export type RequestType = (options: AxiosRequestConfig) => Promise<Result<any>>;
 
 const request: RequestType = async (options: AxiosRequestConfig) => {
+    if (!options.url || options.url == '') {
+        return {
+            status: 'fail',
+            code: 1,
+            error: new Error('url为空'),
+        };
+    }
+
     //添加csrf头部
     if (!options.headers) {
         options.headers = {};
@@ -88,8 +96,12 @@ const request: RequestType = async (options: AxiosRequestConfig) => {
 
     //转换GET请求的data参数
     if (options.method == 'GET' && options.data) {
-        let queryStr = JSON.stringify(options.data);
-        options.params['data'] = queryStr;
+        let queryStr = encodeURIComponent(JSON.stringify(options.data));
+        if (options.url.indexOf('?') == -1) {
+            options.url = options.url + '?data=' + queryStr;
+        } else {
+            options.url = options.url + '&data=' + queryStr;
+        }
         options.data = undefined;
     }
 

@@ -12,6 +12,7 @@ public class WebSecurityConfig extends SecurityBoostConfiguration {
     protected void configureAuthorizeRequests(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/").permitAll()
+                .antMatchers("/static/*").permitAll()
                 .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/index.html").permitAll()
                 .antMatchers("/login/*").permitAll()

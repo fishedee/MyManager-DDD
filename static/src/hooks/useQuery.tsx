@@ -6,6 +6,24 @@ import useRequest from './useRequest';
 import Result, { ResultSuccess, ResultFail } from './Result';
 import { throttle } from 'underscore';
 
+type requestCallback = ((data: Result<any>) => void) | 'nothing';
+let requestCache = new Map<string, requestCallback[]>();
+
+let queryCache = new Map<string, any>();
+
+export function invalidQueryCacheByKey(prefixKey: string) {
+    let cacheKeys = queryCache.keys();
+    for (let key in cacheKeys) {
+        if (key.startsWith(prefixKey)) {
+            queryCache.delete(key);
+        }
+    }
+}
+
+export function clearQueryCache() {
+    queryCache.clear();
+}
+
 export type UseQueryRequest = (
     config: AxiosRequestConfig,
 ) => Promise<Result<any>>;
@@ -15,6 +33,7 @@ export type UseQueryFetch = (data: UseQueryRequest) => Promise<void> | void;
 export type UseQueryOptions = {
     refreshDeps?: any[];
     firstDidNotRefresh?: boolean;
+    cacheKey?: string;
 };
 
 export class UseQueryConcurrentError extends Error {}
@@ -34,7 +53,7 @@ interface IDispose {
  * 数据变更自动刷新，页码变化，左侧树选择时，我们需要重新拉ajax。这种场景下，直接传数据自身，会自动检查数据是否变更了，来触发refresh。
  *      与react的不同，这里的数据检查同时支持了基础数据检查，与复杂数据检查，而不是简单的引用检查，这样性能更好，也更使用。我们可以深度侦听整个filter数据是否变化来触发refresh
  * 按钮刷新，其他场景，通过onClick等方式的刷新，所以我们对外提供了fetch接口，onClick直接绑定到这个fetch接口上就可以了
- * 缓存，缓存是为了解决同一个页面的多个相同类型的component的数据问题
+ * 缓存，缓存是为了解决同一个页面的多个相同类型的component的数据问题，注意与useForm的缓存的不同。这里的难点在于，同一个cacheKey的多个请求可能同时发生的，需要合并请求
  */
 
 function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
@@ -67,14 +86,67 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
     let request = useRequest();
 
     let manualFetch = async () => {
+        const cacheRequest = async (
+            config: AxiosRequestConfig,
+        ): Promise<Result<any>> => {
+            if (!options?.cacheKey) {
+                //没有缓存的情况，不需要走请求池，也不需要走缓存
+                return await request(config);
+            }
+            //有缓存的情况
+            //取缓存
+            let cacheKey = options?.cacheKey + '_' + JSON.stringify(config);
+            let cacheData = queryCache.get(cacheKey);
+            if (cacheData) {
+                return {
+                    status: 'success',
+                    data: cacheData,
+                };
+            }
+            //获取请求池的信息
+            if (requestCache.has(cacheKey) == false) {
+                requestCache.set(cacheKey, []);
+            }
+            let requestList = requestCache.get(cacheKey);
+            let isFirst = requestList?.length == 0;
+            if (isFirst == false) {
+                //被合并的那个
+                return new Promise((resolve, reject) => {
+                    //将自身放入resolve就可以返回了
+                    requestList?.push(resolve);
+                });
+            } else {
+                //首次触发的请求的那个
+                requestList?.push('nothing');
+                let result = await request(config);
+
+                //先通知其他请求完成了
+                let currentRequestList = requestCache.get(cacheKey)!;
+                for (let i = 0; i != currentRequestList?.length; i++) {
+                    let callback = currentRequestList[i];
+                    if (typeof callback == 'function') {
+                        callback(result);
+                    }
+                }
+                //清空当前key的请求池
+                requestCache.delete(cacheKey);
+
+                //写入缓存
+                if (result.status == 'fail') {
+                    return result;
+                }
+                queryCache.set(cacheKey, result.data);
+                return result;
+            }
+        };
         const newRequest = async (
             config: AxiosRequestConfig,
         ): Promise<Result<any>> => {
             ref.current++;
             let current = ref.current;
-            setLoading(true);
-            let result = await request(config);
-            setLoading(false);
+            //setLoading(true);
+            let result = await cacheRequest(config);
+            //setLoading(false);
             if (current != ref.current) {
                 return {
                     status: 'fail',
@@ -87,13 +159,19 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
         await fetch(newRequest);
     };
 
+    /*
+    //监听复杂数据变更的性能太差了，这里被去掉了 
     useEffect(() => {
-        const throttleFetch = throttle(manualFetch, 300);
+        const throttleFetch = throttle(manualFetch, 200, {
+            leading: false,
+        });
 
         //对于复杂对象，使用observe来做监听
         let observeDispose: IDispose[] = [];
         for (let i = 0; i != deps.otherDeps.length; i++) {
-            let dispose = observe(deps.otherDeps[i], throttleFetch);
+            let dispose = observe(deps.otherDeps[i], () => {
+                throttleFetch();
+            });
             observeDispose.push(dispose);
         }
 
@@ -103,7 +181,8 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
                 observeDispose[i]();
             }
         };
-    }, deps.otherDeps);
+    }, []);
+    */
 
     useEffect(() => {
         if (firstRender.current) {

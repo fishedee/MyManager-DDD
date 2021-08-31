@@ -21,5 +21,15 @@ export default {
             name: '银行卡管理',
             icon: <SmileOutlined />, //定义图标
         },
+        {
+            path: '/category',
+            name: '分类管理',
+            icon: <SmileOutlined />, //定义图标
+        },
+        {
+            path: '/account',
+            name: '账务管理',
+            icon: <SmileOutlined />, //定义图标
+        },
     ],
 };

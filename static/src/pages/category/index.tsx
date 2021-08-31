@@ -37,7 +37,7 @@ const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
     const { form, data, fetch, loading } = useTableBoost(
-        '/card/search',
+        '/category/search',
         {
             effects: () => {
                 onFieldReact('list.*.operatorion.del', (f) => {
@@ -45,7 +45,7 @@ const CardList: React.FC<any> = observer((props) => {
                     const id = field.query('..id').value();
                     field.componentProps.onClick = async () => {
                         let result = await request({
-                            url: '/card/del',
+                            url: '/category/del',
                             method: 'POST',
                             data: {
                                 id: id,
@@ -61,7 +61,7 @@ const CardList: React.FC<any> = observer((props) => {
                     const field = f as Field;
                     const id = field.query('..id').value();
                     field.componentProps.to = {
-                        pathname: '/card/detail',
+                        pathname: '/category/detail',
                         query: {
                             id: id,
                         },
@@ -79,21 +79,14 @@ const CardList: React.FC<any> = observer((props) => {
                 name="filter"
                 x-decorator="FormGrid"
                 x-decorator-props={{
-                    maxColumns: 3,
                     minColumns: 3,
+                    maxColumns: 3,
                     columnGap: 20,
                 }}
             >
                 <SchemaField.String
                     name="name"
                     title="名字"
-                    x-decorator="FormItem"
-                    x-component="Input"
-                    x-component-props={{}}
-                />
-                <SchemaField.String
-                    name="bank"
-                    title="银行"
                     x-decorator="FormItem"
                     x-component="Input"
                     x-component-props={{}}
@@ -124,7 +117,7 @@ const CardList: React.FC<any> = observer((props) => {
             >
                 <SchemaField.Void>
                     <SchemaField.Void
-                        title="银行卡ID"
+                        title="分类ID"
                         x-component="Table.Column"
                         x-component-props={{
                             labelIndex: 'id',
@@ -135,27 +128,6 @@ const CardList: React.FC<any> = observer((props) => {
                         x-component="Table.Column"
                         x-component-props={{
                             labelIndex: 'name',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="银行"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'bank',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="卡号"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'card',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="初始余额"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'money',
                         }}
                     />
                     <SchemaField.String
@@ -189,7 +161,7 @@ const CardList: React.FC<any> = observer((props) => {
                                 x-component="Link"
                                 x-component-props={{
                                     danger: true,
-                                    dangerTitle: '确定删除该银行卡?',
+                                    dangerTitle: '确定删除该分类?',
                                 }}
                             />
                         </SchemaField.Void>
@@ -201,7 +173,7 @@ const CardList: React.FC<any> = observer((props) => {
     return (
         <Form form={form} feedbackLayout={'none'} layout={'vertical'}>
             <MyPageContainer
-                title={'银行卡列表'}
+                title={'分类列表'}
                 hiddenBack={true}
                 loading={loading}
             >
@@ -237,10 +209,10 @@ const CardList: React.FC<any> = observer((props) => {
                                 <Button
                                     type="primary"
                                     onClick={() => {
-                                        history.push('/card/detail');
+                                        history.push('/category/detail');
                                     }}
                                 >
-                                    添加银行卡
+                                    添加分类
                                 </Button>
                             </Space>
                         }

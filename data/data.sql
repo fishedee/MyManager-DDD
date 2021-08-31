@@ -76,7 +76,7 @@ create table account(
                           user_id integer not null,
                           user_name char(32) not null,
                           name char(32) not null,
-                          money integer not null,
+                          money decimal(12,4) not null,
                           remark varchar(128) not null,
                           category_id integer not null,
                           category_name char(32) not null,
@@ -107,9 +107,9 @@ insert into card(id,user_id,user_name,name,bank,card,money,remark,create_time,mo
 (10003,10001,'fish','理财卡',"工商银行卡",'',0,'',now(),now());
 
 insert into account(id,user_id,user_name,name,money,remark,category_id,category_name,card_id,card_name,type,create_time,modify_time) values
-(10001,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','in',now(),now()),
-(10002,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','out','2014-11-10 12:0:0','2014-11-10 12:0:0'),
-(10003,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','transfer-in','2014-10-10 12:0:0','2014-10-10 12:0:0');
+(10001,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','IN',now(),now()),
+(10002,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT','2014-11-10 12:0:0','2014-11-10 12:0:0'),
+(10003,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN','2014-10-10 12:0:0','2014-10-10 12:0:0');
 
 #显示一下所有数据
 select * from user;

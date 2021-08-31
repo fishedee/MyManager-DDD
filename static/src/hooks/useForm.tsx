@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 let formCache = new Map<string, object>();
 
-export function clearFormCacheByKeyStartsWith(prefixKey: string) {
+export function invalidFormCacheByKey(prefixKey: string) {
     let cacheKeys = formCache.keys();
     for (let key in cacheKeys) {
         if (key.startsWith(prefixKey)) {
@@ -13,7 +13,7 @@ export function clearFormCacheByKeyStartsWith(prefixKey: string) {
     }
 }
 
-export function clearAllFormCache() {
+export function clearFormCache() {
     formCache.clear();
 }
 
