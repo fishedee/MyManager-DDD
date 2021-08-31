@@ -37,7 +37,6 @@ const formTab = FormTab.createFormTab();
 
 export default function IndexPage() {
     const { user, setUser } = useModel('user');
-    console.log(user, setUser);
     const { initialState, loading, error, refresh, setInitialState } = useModel(
         '@@initialState',
     );

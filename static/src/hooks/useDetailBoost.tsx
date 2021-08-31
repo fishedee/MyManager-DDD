@@ -3,6 +3,8 @@ import useForm from './useForm';
 import useQuery from './useQuery';
 import { createForm, Form, IFormProps } from '@formily/core';
 import useRequest from './useRequest';
+import { clearQueryCache } from './useQuery';
+import { useMemo } from 'react';
 
 type DetailBoostProps = {
     detail: any;
@@ -19,6 +21,10 @@ function useDetailBoost(
     form: IFormProps<DetailBoostProps> = {},
     options?: DetailBoostOptions,
 ) {
+    useMemo(() => {
+        //每个页面的queryCache都要清空
+        clearQueryCache();
+    }, []);
     const location: any = useLocation();
     const history = useHistory();
     const id = location?.query?.id;

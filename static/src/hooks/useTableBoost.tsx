@@ -1,6 +1,8 @@
 import useForm from './useForm';
 import useQuery from './useQuery';
 import { createForm, Form, IFormProps } from '@formily/core';
+import { useMemo } from 'react';
+import { clearQueryCache } from './useQuery';
 
 type TableBoostProps = {
     filter: any;
@@ -16,6 +18,10 @@ function useTableBoost(
     form: IFormProps<TableBoostProps> = {},
     options?: TableBoostOptions,
 ) {
+    useMemo(() => {
+        //每个页面的queryCache都要清空
+        clearQueryCache();
+    }, []);
     const formInfo = useForm(
         {
             ...form,
