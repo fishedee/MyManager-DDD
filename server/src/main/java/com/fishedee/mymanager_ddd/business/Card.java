@@ -10,6 +10,7 @@ import com.fishedee.util_boost.utils.ValidatorUtil;
 import com.fishedee.web_boost.WebBoostException;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.Entity;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 @ToString
 @Getter
 @IdGeneratorKey("card")
+@Slf4j
 public class Card extends BaseEntityType {
     @Id
     private Long id;
@@ -28,6 +30,8 @@ public class Card extends BaseEntityType {
     private Long userId;
 
     private String userName;
+
+    private String name;
 
     private String bank;
 
@@ -48,12 +52,14 @@ public class Card extends BaseEntityType {
 
     public Card(CardDTO dto){
         ValidatorUtil.check(dto);
+        this.update(dto);
         this.id = idGenerator.nextLong(this);
         this.userId = loginUserHolder.getCurrentUser().getId();
         this.userName = loginUserHolder.getCurrentUser().getName();
     }
 
     private void update(CardDTO dto){
+        this.name = dto.getName();
         this.bank = dto.getBank();
         this.card = dto.getCard();
         this.money = dto.getMoney();
@@ -62,8 +68,9 @@ public class Card extends BaseEntityType {
 
     public void mod(CardDTO dto){
         ValidatorUtil.check(dto);
-        if( this.userId.equals(loginUserHolder.getCurrentUser().getId())){
-            throw new WebBoostException(1,"不能改动userId",null);
+        this.update(dto);
+        if( this.userId.equals(loginUserHolder.getCurrentUser().getId()) == false ){
+            throw new WebBoostException(1,"你没有权限执行此操作",null);
         }
         this.userName = loginUserHolder.getCurrentUser().getName();
     }

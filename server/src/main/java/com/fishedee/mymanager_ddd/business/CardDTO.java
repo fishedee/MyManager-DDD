@@ -12,11 +12,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CardDTO {
-    @NotNull
     private Long userId;
 
-    @NotBlank
     private String userName;
+
+    @NotBlank
+    private String name;
 
     @NotBlank
     private String bank;

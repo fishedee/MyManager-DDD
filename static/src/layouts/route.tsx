@@ -16,5 +16,10 @@ export default {
             name: '用户管理',
             icon: <SmileOutlined />, //定义图标
         },
+        {
+            path: '/card',
+            name: '银行卡管理',
+            icon: <SmileOutlined />, //定义图标
+        },
     ],
 };

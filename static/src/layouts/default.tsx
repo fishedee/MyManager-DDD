@@ -13,15 +13,6 @@ export default (props) => {
     );
     const history = useHistory();
     const location = useLocation();
-    const mixModeSetting = {
-        fixSiderbar: true, //可调的左侧群
-        navTheme: 'dark', //light的主题模式
-        layout: 'side',
-        primaryColor: '#1890ff', //菜单主题色
-        contentWidth: 'Fluid', //流式内容布局，宽度总是会自动调整
-        splitMenus: false, //分割菜单，一级菜单在顶部，其他菜单在左侧
-        fixedHeader: true,
-    };
     const [state, setState] = useState(0);
     const request = useRequest();
     const logout = async () => {
@@ -157,7 +148,13 @@ export default (props) => {
                         />
                     )}
                     //是否有菜单的可选收缩按钮
-                    {...mixModeSetting}
+                    fixSiderbar={true} //可调的左侧群
+                    navTheme={'dark'} //light的主题模式
+                    layout={'side'}
+                    primaryColor={'#1890ff'} //菜单主题色
+                    contentWidth={'Fluid'} //流式内容布局，宽度总是会自动调整
+                    splitMenus={false} //分割菜单，一级菜单在顶部，其他菜单在左侧
+                    fixedHeader={true}
                 >
                     <Fragment key={state}>{props.children}</Fragment>
                 </ProLayout>

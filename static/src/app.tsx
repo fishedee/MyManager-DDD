@@ -3,8 +3,8 @@ import request from './util/request';
 import { notification, Modal } from 'antd';
 import { PageLoading } from '@ant-design/pro-layout';
 import User from './util/user';
-import Result from './hooks/Result';
 import { history } from 'umi';
+import 'antd/dist/antd.css';
 
 replaceRequestHandler(request);
 replaceErrorHandler((resultFail) => {

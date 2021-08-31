@@ -30,15 +30,25 @@ public class CardController extends TenantCurdController<Card,Long, CardDTO, Car
 
     @Data
     public static class Filter implements CurdFilterable {
+        private Long userId;
+
         private String remark;
 
-        private Long userId;
+        private String name;
+
+        private String bank;
 
         @Override
         public CurdFilter getFilter(){
             CurdFilterBuilder builder = new CurdFilterBuilder();
             if( remark != null){
                 builder.like("remark","%"+remark+"%");
+            }
+            if( name != null){
+                builder.like("name","%"+name+"%");
+            }
+            if( bank != null){
+                builder.like("bank","%"+bank+"%");
             }
             if( userId != null){
                 builder.equal("userId",userId);

@@ -26,6 +26,10 @@ export default defineConfig({
             target: 'http://localhost:9191',
             changeOrigin: true,
         },
+        '/card': {
+            target: 'http://localhost:9191',
+            changeOrigin: true,
+        },
     },
     fastRefresh: {},
 });

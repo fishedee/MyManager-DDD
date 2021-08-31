@@ -13,7 +13,6 @@ import ProCard from '@ant-design/pro-card';
 import useForm from '@/hooks/useForm';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import useRequest from '@/hooks/useRequest';
-import 'antd/dist/antd.css';
 import { useModel } from '@/.umi/plugin-model/useModel';
 import { history } from '@/.umi/core/history';
 import useQuery from '@/hooks/useQuery';
@@ -66,7 +65,7 @@ export default function IndexPage() {
             ...initialState,
             currentUser: result.data,
         });
-        clearAllFormCache('table');
+        clearAllFormCache();
         history.push('/user');
     };
     return (

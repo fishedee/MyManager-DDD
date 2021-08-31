@@ -13,8 +13,6 @@ import {
 } from '@formily/antd';
 import useTableBoost from '@/hooks/useTableBoost';
 import useRequest from '@/hooks/useRequest';
-import SelectIsEnabled from './SelectIsEnabled';
-import SelectRole from './SelectRole';
 import Link from '@/components/Link';
 import { Field, onFieldReact } from '@formily/core';
 import ProCard from '@ant-design/pro-card';
@@ -29,19 +27,17 @@ const SchemaField = createSchemaField({
         Button,
         Submit,
         Table,
-        SelectIsEnabled,
-        SelectRole,
         SpaceDivider,
         Link,
         FormGrid,
     },
 });
 
-const UserList: React.FC<any> = observer((props) => {
+const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
     const { form, data, fetch, loading } = useTableBoost(
-        '/user/search',
+        '/card/search',
         {
             effects: () => {
                 onFieldReact('list.*.operatorion.del', (f) => {
@@ -49,7 +45,7 @@ const UserList: React.FC<any> = observer((props) => {
                     const id = field.query('..id').value();
                     field.componentProps.onClick = async () => {
                         let result = await request({
-                            url: '/user/del',
+                            url: '/card/del',
                             method: 'POST',
                             data: {
                                 id: id,
@@ -65,7 +61,7 @@ const UserList: React.FC<any> = observer((props) => {
                     const field = f as Field;
                     const id = field.query('..id').value();
                     field.componentProps.to = {
-                        pathname: '/user/detail',
+                        pathname: '/card/detail',
                         query: {
                             id: id,
                         },
@@ -90,6 +86,13 @@ const UserList: React.FC<any> = observer((props) => {
                 <SchemaField.String
                     name="name"
                     title="名字"
+                    x-decorator="FormItem"
+                    x-component="Input"
+                    x-component-props={{}}
+                />
+                <SchemaField.String
+                    name="bank"
+                    title="银行"
                     x-decorator="FormItem"
                     x-component="Input"
                     x-component-props={{}}
@@ -120,7 +123,7 @@ const UserList: React.FC<any> = observer((props) => {
             >
                 <SchemaField.Void>
                     <SchemaField.Void
-                        title="用户ID"
+                        title="银行卡ID"
                         x-component="Table.Column"
                         x-component-props={{
                             labelIndex: 'id',
@@ -133,29 +136,25 @@ const UserList: React.FC<any> = observer((props) => {
                             labelIndex: 'name',
                         }}
                     />
-                    <SchemaField.Void title="角色" x-component="Table.Column">
-                        <SchemaField.String
-                            x-read-pretty={true}
-                            x-editable={false}
-                            name="roles"
-                            x-component={'SelectRole'}
-                        />
-                    </SchemaField.Void>
                     <SchemaField.Void
-                        title="是否可用"
-                        x-component="Table.Column"
-                    >
-                        <SchemaField.String
-                            x-editable={false}
-                            name="isEnabled"
-                            x-component={'SelectIsEnabled'}
-                        />
-                    </SchemaField.Void>
-                    <SchemaField.String
-                        title="创建时间"
+                        title="银行"
                         x-component="Table.Column"
                         x-component-props={{
-                            labelIndex: 'createTime',
+                            labelIndex: 'bank',
+                        }}
+                    />
+                    <SchemaField.Void
+                        title="卡号"
+                        x-component="Table.Column"
+                        x-component-props={{
+                            labelIndex: 'card',
+                        }}
+                    />
+                    <SchemaField.Void
+                        title="初始余额"
+                        x-component="Table.Column"
+                        x-component-props={{
+                            labelIndex: 'money',
                         }}
                     />
                     <SchemaField.String
@@ -182,7 +181,7 @@ const UserList: React.FC<any> = observer((props) => {
                                 x-component="Link"
                                 x-component-props={{
                                     danger: true,
-                                    dangerTitle: '确定删除该用户?',
+                                    dangerTitle: '确定删除该银行卡?',
                                 }}
                             />
                         </SchemaField.Void>
@@ -194,7 +193,7 @@ const UserList: React.FC<any> = observer((props) => {
     return (
         <Form form={form} feedbackLayout={'none'} layout={'vertical'}>
             <MyPageContainer
-                title={'用户列表'}
+                title={'银行卡列表'}
                 hiddenBack={true}
                 loading={loading}
             >
@@ -224,16 +223,16 @@ const UserList: React.FC<any> = observer((props) => {
                         </Space>
                     </ProCard>
                     <ProCard
-                        title="用户列表"
+                        title="银行卡列表"
                         extra={
                             <Space>
                                 <Button
                                     type="primary"
                                     onClick={() => {
-                                        history.push('/user/detail');
+                                        history.push('/card/detail');
                                     }}
                                 >
-                                    添加用户
+                                    添加银行卡
                                 </Button>
                             </Space>
                         }
@@ -246,4 +245,4 @@ const UserList: React.FC<any> = observer((props) => {
     );
 });
 
-export default UserList;
+export default CardList;
