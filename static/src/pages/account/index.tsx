@@ -49,7 +49,6 @@ const CardList: React.FC<any> = observer((props) => {
                 onFieldReact('list.*.operatorion.del', (f) => {
                     const field = f as Field;
                     const id = field.query('..id').value();
-                    /*
                     field.componentProps.onClick = async () => {
                         let result = await request({
                             url: '/account/del',
@@ -63,19 +62,16 @@ const CardList: React.FC<any> = observer((props) => {
                         }
                         fetch();
                     };
-                    */
                 });
                 onFieldReact('list.*.operatorion.edit', (f) => {
                     const field = f as Field;
                     const id = field.query('..id').value();
-                    /*
                     field.componentProps.to = {
                         pathname: '/account/detail',
                         query: {
                             id: id,
                         },
                     };
-                    */
                 });
             },
         },
@@ -83,7 +79,6 @@ const CardList: React.FC<any> = observer((props) => {
             refreshOnFilterChange: true,
         },
     );
-    console.log('Account List Render');
     const querySchema = (
         <SchemaField>
             <SchemaField.Object
@@ -126,13 +121,6 @@ const CardList: React.FC<any> = observer((props) => {
                 <SchemaField.String
                     name="[categoryId,categoryName]"
                     title="分类"
-                    x-decorator="FormItem"
-                    x-component="SelectCategory"
-                    x-component-props={{}}
-                />
-                <SchemaField.String
-                    name="[categoryId2,categoryName2]"
-                    title="分类2"
                     x-decorator="FormItem"
                     x-component="SelectCategory"
                     x-component-props={{}}
@@ -262,9 +250,6 @@ const CardList: React.FC<any> = observer((props) => {
                                     justifyContent: 'flex-end',
                                 }}
                             >
-                                <Button type="primary" onClick={fetch}>
-                                    查询
-                                </Button>
                                 <Button
                                     onClick={() => {
                                         data.filter = {};

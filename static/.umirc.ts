@@ -11,7 +11,6 @@ export default defineConfig({
     },
     //打开locale
     locale: { antd: true },
-
     publicPath: '/static/',
 
     //https://umijs.org/zh-CN/plugins/plugin-antd

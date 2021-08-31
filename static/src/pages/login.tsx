@@ -13,8 +13,7 @@ import ProCard from '@ant-design/pro-card';
 import useForm from '@/hooks/useForm';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import useRequest from '@/hooks/useRequest';
-import { useModel } from '@/.umi/plugin-model/useModel';
-import { history } from '@/.umi/core/history';
+import { useModel, history } from 'umi';
 import useQuery from '@/hooks/useQuery';
 import { useEffect, useMemo } from 'react';
 import { clearFormCache } from '@/hooks/useForm';
@@ -37,6 +36,8 @@ const SchemaField = createSchemaField({
 const formTab = FormTab.createFormTab();
 
 export default function IndexPage() {
+    const { user, setUser } = useModel('user');
+    console.log(user, setUser);
     const { initialState, loading, error, refresh, setInitialState } = useModel(
         '@@initialState',
     );

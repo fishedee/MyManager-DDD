@@ -144,9 +144,9 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
         ): Promise<Result<any>> => {
             ref.current++;
             let current = ref.current;
-            //setLoading(true);
+            setLoading(true);
             let result = await cacheRequest(config);
-            //setLoading(false);
+            setLoading(false);
             if (current != ref.current) {
                 return {
                     status: 'fail',
@@ -159,8 +159,6 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
         await fetch(newRequest);
     };
 
-    /*
-    //监听复杂数据变更的性能太差了，这里被去掉了 
     useEffect(() => {
         const throttleFetch = throttle(manualFetch, 200, {
             leading: false,
@@ -181,8 +179,7 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
                 observeDispose[i]();
             }
         };
-    }, []);
-    */
+    }, deps.otherDeps);
 
     useEffect(() => {
         if (firstRender.current) {
