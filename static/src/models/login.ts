@@ -1,33 +1,14 @@
 import { useState, useCallback } from 'react';
 import request from '@/util/request';
-import Result from '@/hooks/Result';
 
-type User = {
-    id: number;
-    name: string;
-    roles: string;
-};
+//这个model是毫无用处，只是为了提示打开umi打开useModel模块而已
 export default function useLoginModel() {
-    const [login, setLogin] = useState<User | undefined>(undefined);
+    const [login, setLogin] = useState(false);
 
-    const checkLogin = async (): Promise<Result<User>> => {
-        let result = await request({
-            method: 'GET',
-            url: '/login/islogin',
-        });
-        if (result.status == 'fail') {
-            return result;
-        }
-        let data: User = result.data;
-        setLogin(data);
-        return {
-            status: 'success',
-            data: data,
-        };
-    };
+    const doNothing = () => {};
 
     return {
         login,
-        checkLogin,
+        doNothing,
     };
 }

@@ -8,7 +8,7 @@ import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import style from './default.less';
 import useRequest from '@/hooks/useRequest';
 export default (props) => {
-    const { login, checkLogin } = useModel('login');
+    const { initialState } = useModel('@@initialState');
     const history = useHistory();
     const location = useLocation();
     const [state, setState] = useState(0);
@@ -46,7 +46,9 @@ export default (props) => {
             <Dropdown overlay={menu} overlayClassName={style.container}>
                 <span>
                     <Avatar size="small" icon={<UserOutlined />} />
-                    <span style={{ marginLeft: '10px' }}>{login?.name}</span>
+                    <span style={{ marginLeft: '10px' }}>
+                        {initialState?.currentUser?.name}
+                    </span>
                 </span>
             </Dropdown>
         </Space>

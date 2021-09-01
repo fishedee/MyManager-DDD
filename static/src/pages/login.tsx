@@ -36,7 +36,7 @@ const SchemaField = createSchemaField({
 const formTab = FormTab.createFormTab();
 
 export default function IndexPage() {
-    const { login, checkLogin } = useModel('login');
+    const { initialState, setInitialState } = useModel('@@initialState');
     const { form, data } = useForm({
         values: {
             login: {},
@@ -58,7 +58,11 @@ export default function IndexPage() {
         if (result.status == 'fail') {
             return;
         }
-        await checkLogin();
+        let currentUser = await initialState?.fetchUserInfo();
+        setInitialState({
+            currentUser: currentUser,
+            fetchUserInfo: initialState!.fetchUserInfo,
+        });
         clearFormCache();
         history.push('/user');
     };

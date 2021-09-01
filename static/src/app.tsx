@@ -4,6 +4,7 @@ import { notification, Modal } from 'antd';
 import { PageLoading } from '@ant-design/pro-layout';
 import { history, useModel } from 'umi';
 import 'antd/dist/antd.css';
+import User from '@/models/User';
 
 replaceRequestHandler(request);
 replaceErrorHandler((resultFail) => {
@@ -28,14 +29,27 @@ export const initialStateConfig = {
 };
 
 /**
+ * 不能在getInitialState使用其他的model
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
-    data: string;
+    currentUser: User | undefined;
+    fetchUserInfo: () => Promise<User | undefined>;
 }> {
-    const { checkLogin } = useModel('login');
-    await checkLogin();
+    const fetchUserInfo: () => Promise<User | undefined> = async () => {
+        const result = await request({
+            method: 'GET',
+            url: '/login/islogin',
+        });
+        if (result.status == 'fail') {
+            return undefined;
+        }
+        let data: User = result.data;
+        return data;
+    };
+    const currentUser = await fetchUserInfo();
     return {
-        data: '',
+        fetchUserInfo,
+        currentUser,
     };
 }

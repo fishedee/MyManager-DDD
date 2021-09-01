@@ -17,6 +17,7 @@ import Link from '@/components/Link';
 import { Field, onFieldReact } from '@formily/core';
 import ProCard from '@ant-design/pro-card';
 import { useHistory } from 'react-router-dom';
+import useForm from '@/hooks/useForm';
 
 const SchemaField = createSchemaField({
     components: {
@@ -36,6 +37,51 @@ const SchemaField = createSchemaField({
 const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
+    const { form, data } = useForm({
+        values: {
+            paginaction: { current: 0, pageSize: 10 },
+            list: [
+                {
+                    createTime: '2021-09-01 15:09:40',
+                    modifyTime: '2021-09-01 15:09:40',
+                    id: 10004,
+                    userId: 10001,
+                    userName: 'fish',
+                    name: '理财卡',
+                    bank: '工商银行卡',
+                    card: '',
+                    money: '0.00',
+                    remark: '',
+                },
+                {
+                    createTime: '2021-09-01 15:09:40',
+                    modifyTime: '2021-09-01 15:09:40',
+                    id: 10002,
+                    userId: 10001,
+                    userName: 'fish',
+                    name: '消费卡',
+                    bank: '工商银行卡',
+                    card: '',
+                    money: '0.00',
+                    remark: '',
+                },
+                {
+                    createTime: '2021-09-01 15:09:40',
+                    modifyTime: '2021-09-01 15:09:40',
+                    id: 10001,
+                    userId: 10001,
+                    userName: 'fish',
+                    name: '工资卡',
+                    bank: '农业银行卡',
+                    card: '',
+                    money: '0.00',
+                    remark: '',
+                },
+            ],
+            filter: {},
+        },
+    });
+    /*
     const { form, data, fetch, loading } = useTableBoost(
         '/card/search',
         {
@@ -73,6 +119,7 @@ const CardList: React.FC<any> = observer((props) => {
             refreshOnFilterChange: true,
         },
     );
+    */
     const querySchema = (
         <SchemaField>
             <SchemaField.Object
@@ -203,7 +250,7 @@ const CardList: React.FC<any> = observer((props) => {
             <MyPageContainer
                 title={'银行卡列表'}
                 hiddenBack={true}
-                loading={loading}
+                loading={false}
             >
                 <Space
                     direction="vertical"
@@ -222,7 +269,6 @@ const CardList: React.FC<any> = observer((props) => {
                                 <Button
                                     onClick={() => {
                                         data.filter = {};
-                                        fetch();
                                     }}
                                 >
                                     重置
