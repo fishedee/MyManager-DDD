@@ -1,8 +1,9 @@
-import useForm from './useForm';
+import useForm, { createFormProps } from './useForm';
 import useQuery from './useQuery';
-import { createForm, Form, IFormProps } from '@formily/core';
+import { IFormProps, onFieldInputValueChange } from '@formily/core';
 import { useMemo } from 'react';
 import { clearQueryCache } from './useQuery';
+import { throttle } from 'underscore';
 
 type TableBoostProps = {
     filter: any;
@@ -22,17 +23,29 @@ function useTableBoost(
         //每个页面的queryCache都要清空
         clearQueryCache();
     }, []);
-    const formInfo = useForm(
-        {
+
+    //带限流的fetch
+    let fetchThrottle = () => {};
+
+    const formInfo = useForm(() => {
+        if (options?.refreshOnFilterChange) {
+            let oldEffects = form.effects ? form.effects : () => {};
+            form.effects = (form) => {
+                onFieldInputValueChange('filter.*', () => {
+                    fetchThrottle();
+                });
+                oldEffects(form);
+            };
+        }
+        return createFormProps({
             ...form,
             values: {
                 filter: {},
                 paginaction: { current: 1, pageSize: 10, total: 0 },
                 list: [],
             },
-        },
-        { cacheKey: 'table.' + ajaxUrl },
-    );
+        });
+    }, {});
     const queryBoostInfo = useQuery(
         async (request) => {
             let result = await request({
@@ -56,15 +69,19 @@ function useTableBoost(
             refreshDeps: [
                 formInfo.data.paginaction.current,
                 formInfo.data.paginaction.pageSize,
-                options?.refreshOnFilterChange
-                    ? formInfo.data.filter
-                    : undefined,
             ],
         },
     );
+    fetchThrottle = useMemo(() => {
+        //FIXME 不明原因
+        //debounce会产生Select组件的卡顿
+        //throttle的leading设置为false也会卡顿
+        return throttle(queryBoostInfo.fetch, 200);
+    }, []);
     return {
         ...formInfo,
         ...queryBoostInfo,
+        fetchThrottle,
     };
 }
 

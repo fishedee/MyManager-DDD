@@ -14,7 +14,7 @@ import {
 import useTableBoost from '@/hooks/useTableBoost';
 import useRequest from '@/hooks/useRequest';
 import Link from '@/components/Link';
-import { Field, onFieldReact } from '@formily/core';
+import { Field, onFieldReact, onFieldInputValueChange } from '@formily/core';
 import ProCard from '@ant-design/pro-card';
 import { useHistory } from 'react-router-dom';
 import SelectType from './SelectType';

@@ -4,7 +4,6 @@ import { observe } from '@formily/reactive';
 import { AxiosRequestConfig } from 'axios';
 import useRequest from './useRequest';
 import Result, { ResultSuccess, ResultFail } from './Result';
-import { throttle } from 'underscore';
 
 type requestCallback = ((data: Result<any>) => void) | 'nothing';
 let requestCache = new Map<string, requestCallback[]>();
@@ -51,7 +50,7 @@ interface IDispose {
  *      与此同时，我们不希望用户传入具体的响应式数据来帮他赋值，所以，目前的接口设计是让用户传入闭包，自己拉了数据以后，自己去赋值到响应式数据。但是由于要配合冲突检查，所以ajax接口必须是useQuery提供axios接口
  * 首次刷新，我们可以通过传入firstDidNotRefresh，来控制首次是否触发refresh
  * 数据变更自动刷新，页码变化，左侧树选择时，我们需要重新拉ajax。这种场景下，直接传数据自身，会自动检查数据是否变更了，来触发refresh。
- *      与react的不同，这里的数据检查同时支持了基础数据检查，与复杂数据检查，而不是简单的引用检查，这样性能更好，也更使用。我们可以深度侦听整个filter数据是否变化来触发refresh
+ *      与react的不同，这里的数据检查同时支持了基础数据检查，与复杂数据检查。复杂数据的检查应该使用onFieldInputValueChange的做法
  * 按钮刷新，其他场景，通过onClick等方式的刷新，所以我们对外提供了fetch接口，onClick直接绑定到这个fetch接口上就可以了
  * 缓存，缓存是为了解决同一个页面的多个相同类型的component的数据问题，注意与useForm的缓存的不同。这里的难点在于，同一个cacheKey的多个请求可能同时发生的，需要合并请求
  */
@@ -158,28 +157,6 @@ function useQuery(fetch: UseQueryFetch, options?: UseQueryOptions) {
         };
         await fetch(newRequest);
     };
-
-    useEffect(() => {
-        const throttleFetch = throttle(manualFetch, 200, {
-            leading: false,
-        });
-
-        //对于复杂对象，使用observe来做监听
-        let observeDispose: IDispose[] = [];
-        for (let i = 0; i != deps.otherDeps.length; i++) {
-            let dispose = observe(deps.otherDeps[i], () => {
-                throttleFetch();
-            });
-            observeDispose.push(dispose);
-        }
-
-        return () => {
-            //退出的时候进行
-            for (let i = 0; i != observeDispose.length; i++) {
-                observeDispose[i]();
-            }
-        };
-    }, deps.otherDeps);
 
     useEffect(() => {
         if (firstRender.current) {

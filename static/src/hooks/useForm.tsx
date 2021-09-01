@@ -21,6 +21,15 @@ type useFormOption = {
     cacheKey?: string;
 };
 
+type FormProps<T extends object = any> = IFormProps<T> & { values: Partial<T> };
+
+type FormPropsAll<T extends object = any> = FormProps<T> | (() => FormProps<T>);
+
+export function createFormProps<T extends object = any>(
+    data: FormProps<T>,
+): FormProps<T> {
+    return data;
+}
 /*
 设计目标
 * 缓存，为什么不在useQuery进行ajax缓存，而是在form进行缓存。因为我们要保存用户在输入表单但没有提高到服务器的数据，这样用户即使切换了菜单回来以后还能看得到
@@ -29,7 +38,7 @@ type useFormOption = {
 * 单页面的多个同一类型组件缓存，一个Table页面中有多个User Select组件（同一类型），这些组件都共用一个form缓存，并且在useQuery中传入firstDidNotRefresh=isCacheData来避免重复拉取数据
 */
 function useForm<T extends object = any>(
-    formProps: IFormProps<T> & { values: Partial<T> },
+    formProps: FormPropsAll<T>,
     options?: useFormOption,
 ): { form: Form<T>; data: T; isCacheData: boolean } {
     return useMemo(() => {
@@ -42,16 +51,22 @@ function useForm<T extends object = any>(
                 isCacheData = true;
             }
         }
+        let formValue: FormProps<T>;
+        if (typeof formProps == 'function') {
+            formValue = formProps();
+        } else {
+            formValue = formProps;
+        }
         if (!initialValue) {
-            initialValue = observable(formProps.values);
+            initialValue = observable(formValue.values);
             if (options?.cacheKey) {
                 //写入到cache里面
                 formCache.set(options?.cacheKey, initialValue);
             }
         }
-        formProps.values = initialValue;
+        formValue.values = initialValue;
         return {
-            form: createForm(formProps),
+            form: createForm(formValue),
             data: initialValue as T, //FIXME，暂时这里只能用强制类型转换，但是是安全的
             isCacheData: false,
         };
