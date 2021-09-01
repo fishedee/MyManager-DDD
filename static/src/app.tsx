@@ -2,8 +2,7 @@ import { replaceErrorHandler, replaceRequestHandler } from './hooks/useRequest';
 import request from './util/request';
 import { notification, Modal } from 'antd';
 import { PageLoading } from '@ant-design/pro-layout';
-import User from './util/user';
-import { history } from 'umi';
+import { history, useModel } from 'umi';
 import 'antd/dist/antd.css';
 
 replaceRequestHandler(request);
@@ -32,34 +31,11 @@ export const initialStateConfig = {
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
-    currentUser?: User;
-    fetchUserInfo?: () => Promise<User | undefined>;
+    data: string;
 }> {
-    const fetchUserInfo: () => Promise<User | undefined> = async () => {
-        try {
-            const result = await request({
-                method: 'GET',
-                url: '/login/islogin',
-            });
-            if (result.status == 'fail') {
-                return undefined;
-            }
-            let data: User = result.data;
-            return data;
-        } catch (error) {
-            history.push('/login');
-            return undefined;
-        }
-    };
-    // 如果是登录页面，不执行
-    if (history.location.pathname !== '/login') {
-        const currentUser = await fetchUserInfo();
-        return {
-            fetchUserInfo,
-            currentUser,
-        };
-    }
+    const { checkLogin } = useModel('login');
+    await checkLogin();
     return {
-        fetchUserInfo,
+        data: '',
     };
 }

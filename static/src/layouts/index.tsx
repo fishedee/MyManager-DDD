@@ -2,12 +2,10 @@ import DefaultLayout from './default';
 import { useModel, history, Redirect } from 'umi';
 
 export default (props) => {
-    const { initialState, loading, error, refresh, setInitialState } = useModel(
-        '@@initialState',
-    );
+    const { login, checkLogin } = useModel('login');
     if (history.location.pathname == '/login') {
         return <>{props.children}</>;
-    } else if (!initialState.currentUser) {
+    } else if (!login) {
         return <Redirect to="/login" />;
     } else {
         return <DefaultLayout {...props} />;
