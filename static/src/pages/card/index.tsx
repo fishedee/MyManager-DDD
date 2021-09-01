@@ -37,51 +37,7 @@ const SchemaField = createSchemaField({
 const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
-    const { form, data } = useForm({
-        values: {
-            paginaction: { current: 0, pageSize: 10 },
-            list: [
-                {
-                    createTime: '2021-09-01 15:09:40',
-                    modifyTime: '2021-09-01 15:09:40',
-                    id: 10004,
-                    userId: 10001,
-                    userName: 'fish',
-                    name: '理财卡',
-                    bank: '工商银行卡',
-                    card: '',
-                    money: '0.00',
-                    remark: '',
-                },
-                {
-                    createTime: '2021-09-01 15:09:40',
-                    modifyTime: '2021-09-01 15:09:40',
-                    id: 10002,
-                    userId: 10001,
-                    userName: 'fish',
-                    name: '消费卡',
-                    bank: '工商银行卡',
-                    card: '',
-                    money: '0.00',
-                    remark: '',
-                },
-                {
-                    createTime: '2021-09-01 15:09:40',
-                    modifyTime: '2021-09-01 15:09:40',
-                    id: 10001,
-                    userId: 10001,
-                    userName: 'fish',
-                    name: '工资卡',
-                    bank: '农业银行卡',
-                    card: '',
-                    money: '0.00',
-                    remark: '',
-                },
-            ],
-            filter: {},
-        },
-    });
-    /*
+
     const { form, data, fetch, loading } = useTableBoost(
         '/card/search',
         {
@@ -119,7 +75,6 @@ const CardList: React.FC<any> = observer((props) => {
             refreshOnFilterChange: true,
         },
     );
-    */
     const querySchema = (
         <SchemaField>
             <SchemaField.Object

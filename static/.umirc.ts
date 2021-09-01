@@ -20,23 +20,7 @@ export default defineConfig({
         //compact: true,
     },
     proxy: {
-        '/login': {
-            target: 'http://localhost:9191',
-            changeOrigin: true,
-        },
-        '/user': {
-            target: 'http://localhost:9191',
-            changeOrigin: true,
-        },
-        '/card': {
-            target: 'http://localhost:9191',
-            changeOrigin: true,
-        },
-        '/account': {
-            target: 'http://localhost:9191',
-            changeOrigin: true,
-        },
-        '/category': {
+        '/api/': {
             target: 'http://localhost:9191',
             changeOrigin: true,
         },

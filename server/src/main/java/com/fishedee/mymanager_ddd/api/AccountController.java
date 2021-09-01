@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/api/account")
 @Slf4j
 public class AccountController extends TenantCurdController<Account,Long, AccountDTO, AccountController.Filter> {
 

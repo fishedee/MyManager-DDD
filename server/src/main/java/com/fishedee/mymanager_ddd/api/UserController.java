@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @Slf4j
 public class UserController extends CurdController<User,Long, UserDTO, UserController.Filter> {
 

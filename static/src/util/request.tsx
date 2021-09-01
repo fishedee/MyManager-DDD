@@ -81,6 +81,8 @@ const request: RequestType = async (options: AxiosRequestConfig) => {
             error: new Error('url为空'),
         };
     }
+    //统一加入api前缀
+    options.url = '/api' + options.url;
 
     //添加csrf头部
     if (!options.headers) {

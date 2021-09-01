@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 
 @RestController
-@RequestMapping("/card")
+@RequestMapping("/api/card")
 @Slf4j
 public class CardController extends TenantCurdController<Card,Long, CardDTO, CardController.Filter> {
 

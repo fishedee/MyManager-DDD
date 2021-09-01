@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/api/category")
 @Slf4j
 public class CategoryController extends TenantCurdController<Category,Long, CategoryDTO, CategoryController.Filter> {
 

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotBlank;
 
 @RestController
-@RequestMapping("/loginUser")
+@RequestMapping("/api/loginUser")
 @Validated
 public class LoginUserController {
     @Autowired

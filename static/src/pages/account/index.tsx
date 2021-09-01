@@ -220,7 +220,7 @@ const CardList: React.FC<any> = observer((props) => {
                                 x-component="Link"
                                 x-component-props={{
                                     danger: true,
-                                    dangerTitle: '确定删除该分类?',
+                                    dangerTitle: '确定删除该账务?',
                                 }}
                             />
                         </SchemaField.Void>
