@@ -1,5 +1,5 @@
 import MyPageContainer from '@/components/MyPageContainer';
-import { Table, SpaceDivider } from 'antd-formily-boost';
+import { Table, SpaceDivider, useRequest } from 'antd-formily-boost';
 import { createSchemaField, observer } from '@formily/react';
 import { Button } from 'antd';
 import {
@@ -13,7 +13,6 @@ import {
     FormButtonGroup,
     Reset,
 } from '@formily/antd';
-import useRequest from '@/hooks/useRequest';
 import SelectIsEnabled from './SelectIsEnabled';
 import SelectRole from './SelectRole';
 import Link from '@/components/Link';

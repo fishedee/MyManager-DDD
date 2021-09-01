@@ -6,7 +6,8 @@ import { PageActionContext } from '@/components/MyPageContainer';
 import { Avatar, Dropdown, Menu, Space } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import style from './default.less';
-import useRequest from '@/hooks/useRequest';
+import { useRequest } from 'antd-formily-boost';
+
 export default (props) => {
     const { initialState } = useModel('@@initialState');
     const history = useHistory();

@@ -10,13 +10,15 @@ import {
     Space,
 } from '@formily/antd';
 import ProCard from '@ant-design/pro-card';
-import useForm from '@/hooks/useForm';
+import {
+    useForm,
+    useRequest,
+    useQuery,
+    clearFormCache,
+} from 'antd-formily-boost';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import useRequest from '@/hooks/useRequest';
 import { useModel, history } from 'umi';
-import useQuery from '@/hooks/useQuery';
 import { useEffect, useMemo } from 'react';
-import { clearFormCache } from '@/hooks/useForm';
 
 const Tip = () => {
     return <span>{'七天免登录'}</span>;

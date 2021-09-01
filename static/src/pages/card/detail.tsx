@@ -1,5 +1,5 @@
 import MyPageContainer from '@/components/MyPageContainer';
-import { Table, SpaceDivider } from 'antd-formily-boost';
+import { Table, SpaceDivider, useRequest } from 'antd-formily-boost';
 import { createSchemaField, observer } from '@formily/react';
 import { Button } from 'antd';
 import {
@@ -14,7 +14,6 @@ import {
     Reset,
     NumberPicker,
 } from '@formily/antd';
-import useRequest from '@/hooks/useRequest';
 import Link from '@/components/Link';
 import ProCard from '@ant-design/pro-card';
 import useDetailBoost from '@/hooks/useDetailBoost';

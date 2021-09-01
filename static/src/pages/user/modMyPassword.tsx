@@ -12,11 +12,10 @@ import {
     FormButtonGroup,
     Reset,
 } from '@formily/antd';
-import useRequest from '@/hooks/useRequest';
+import { useRequest, useForm } from 'antd-formily-boost';
 import { onFieldInputValueChange, Field } from '@formily/core';
 import ProCard from '@ant-design/pro-card';
 import { Modal } from 'antd';
-import useForm from '@/hooks/useForm';
 
 const SchemaField = createSchemaField({
     components: {

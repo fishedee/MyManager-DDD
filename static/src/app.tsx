@@ -1,13 +1,17 @@
-import { replaceErrorHandler, replaceRequestHandler } from './hooks/useRequest';
-import request from './util/request';
+import {
+    myRequest,
+    setMyRequestUrlPrefixKey,
+    setRequestErrorHandler,
+    setRequestHandler,
+} from 'antd-formily-boost';
 import { notification, Modal } from 'antd';
 import { PageLoading } from '@ant-design/pro-layout';
 import { history, useModel } from 'umi';
 import 'antd/dist/antd.css';
 import User from '@/models/User';
 
-replaceRequestHandler(request);
-replaceErrorHandler((resultFail) => {
+setRequestHandler(myRequest);
+setRequestErrorHandler((resultFail) => {
     console.error(resultFail.error);
     if (resultFail.code == 403) {
         //权限错误
@@ -22,6 +26,7 @@ replaceErrorHandler((resultFail) => {
         });
     }
 });
+setMyRequestUrlPrefixKey('/api');
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -37,7 +42,7 @@ export async function getInitialState(): Promise<{
     fetchUserInfo: () => Promise<User | undefined>;
 }> {
     const fetchUserInfo: () => Promise<User | undefined> = async () => {
-        const result = await request({
+        const result = await myRequest({
             method: 'GET',
             url: '/login/islogin',
         });

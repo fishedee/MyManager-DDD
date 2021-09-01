@@ -1,9 +1,11 @@
 import { useHistory, useLocation } from 'umi';
-import useForm from './useForm';
-import useQuery from './useQuery';
+import {
+    useForm,
+    useQuery,
+    clearQueryCache,
+    useRequest,
+} from 'antd-formily-boost';
 import { createForm, Form, IFormProps } from '@formily/core';
-import useRequest from './useRequest';
-import { clearQueryCache } from './useQuery';
 import { useMemo } from 'react';
 
 type DetailBoostProps = {

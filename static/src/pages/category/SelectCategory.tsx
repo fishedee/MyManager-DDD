@@ -1,4 +1,4 @@
-import useQuery from '@/hooks/useQuery';
+import { useQuery } from 'antd-formily-boost';
 import DoubleSelect from '@/components/DoubleSelect';
 import { Field } from '@formily/core';
 import { useField } from '@formily/react';
