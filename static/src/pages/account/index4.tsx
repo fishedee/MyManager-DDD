@@ -295,7 +295,7 @@ const CardList: React.FC<any> = observer((props) => {
                     />
                     <Select
                         value={select2}
-                        onChange={onSelect2}
+                        onChange={onSelect3}
                         style={{ width: '300px' }}
                         options={options3}
                     />
