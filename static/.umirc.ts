@@ -12,6 +12,7 @@ export default defineConfig({
     //打开locale
     locale: { antd: true },
     publicPath: '/static/',
+    mfsu: {},
 
     //https://umijs.org/zh-CN/plugins/plugin-antd
     //紧凑主题，或者暗黑主题

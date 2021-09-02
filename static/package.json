@@ -23,7 +23,7 @@
         "@ant-design/pro-card": "^1.14.15",
         "@ant-design/pro-layout": "^6.5.0",
         "@formily/antd": "^2.0.0-rc.4",
-        "antd-formily-boost": "^1.1.7",
+        "antd-formily-boost": "^1.1.8",
         "axios": "^0.21.1",
         "qs": "^6.10.1",
         "react": "17.x",
