@@ -1,7 +1,7 @@
 import MyPageContainer from '@/components/MyPageContainer';
-import { Table, SpaceDivider, useRequest } from 'antd-formily-boost';
+import { SpaceDivider, useRequest } from 'antd-formily-boost';
 import { createSchemaField, observer, FormConsumer } from '@formily/react';
-import { Button } from 'antd';
+import { Button, Table } from 'antd';
 import {
     Input,
     Select,
@@ -28,7 +28,6 @@ const SchemaField = createSchemaField({
         Space,
         Button,
         Submit,
-        Table,
         SpaceDivider,
         Link,
         FormGrid,
@@ -127,106 +126,54 @@ const CardList: React.FC<any> = observer((props) => {
             </SchemaField.Object>
         </SchemaField>
     );
+    const columns = [
+        {
+            title: '账务ID',
+            dataIndex: 'id',
+            key: 'id',
+        },
+        {
+            title: '名称',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: '类型',
+            dataIndex: 'type',
+            key: 'type',
+        },
+        {
+            title: '金额',
+            dataIndex: 'money',
+            key: 'money',
+        },
+        {
+            title: '银行卡',
+            dataIndex: 'cardName',
+            key: 'cardName',
+        },
+        {
+            title: '分类',
+            dataIndex: 'categoryName',
+            key: 'categoryName',
+        },
+        {
+            title: '备注',
+            dataIndex: 'remark',
+            key: 'remark',
+        },
+        {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            key: 'createTime',
+        },
+    ];
     const listSchema = (
-        <SchemaField>
-            <SchemaField.Array
-                name="list"
-                x-component="Table"
-                x-component-props={{
-                    paginaction: data.paginaction,
-                    paginationProps: {
-                        showQuickJumper: true,
-                        showSizeChanger: true,
-                        showTotal: true,
-                    },
-                }}
-            >
-                <SchemaField.Void>
-                    <SchemaField.Void
-                        title="账务ID"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'id',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="名称"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'name',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="类型"
-                        x-component="Table.Column"
-                        x-component-props={{}}
-                    >
-                        <SchemaField.String
-                            name="type"
-                            x-editable={false}
-                            x-component={'SelectType'}
-                        />
-                    </SchemaField.Void>
-                    <SchemaField.Void
-                        title="金额"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'money',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="银行卡"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'cardName',
-                        }}
-                    />
-                    <SchemaField.Void
-                        title="分类"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'categoryName',
-                        }}
-                    />
-                    <SchemaField.String
-                        title="备注"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'remark',
-                        }}
-                    />
-                    <SchemaField.String
-                        title="创建时间"
-                        x-component="Table.Column"
-                        x-component-props={{
-                            labelIndex: 'createTime',
-                        }}
-                    />
-                    <SchemaField.Void title="操作" x-component="Table.Column">
-                        <SchemaField.Void
-                            name="operatorion"
-                            title="操作"
-                            x-component="SpaceDivider"
-                        >
-                            <SchemaField.Void
-                                name="edit"
-                                title="编辑"
-                                x-component="Link"
-                            />
-                            <SchemaField.Void
-                                name="del"
-                                title="删除"
-                                x-component="Link"
-                                x-component-props={{
-                                    danger: true,
-                                    dangerTitle: '确定删除该账务?',
-                                }}
-                            />
-                        </SchemaField.Void>
-                    </SchemaField.Void>
-                </SchemaField.Void>
-            </SchemaField.Array>
-        </SchemaField>
+        <Table
+            //默认就有分页控件的
+            columns={columns}
+            dataSource={data.list}
+        />
     );
     return (
         <Form form={form} feedbackLayout={'none'} layout={'vertical'}>

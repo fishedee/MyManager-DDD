@@ -43,7 +43,7 @@ const SchemaField = createSchemaField({
 const UserList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
-    const { form, data, fetch, loading } = useTableBoost(
+    const { form, data, fetch, loading, resetFilter } = useTableBoost(
         '/user/search',
         {
             effects: () => {
@@ -215,14 +215,7 @@ const UserList: React.FC<any> = observer((props) => {
                                     justifyContent: 'flex-end',
                                 }}
                             >
-                                <Button
-                                    onClick={() => {
-                                        data.filter = {};
-                                        fetch();
-                                    }}
-                                >
-                                    重置
-                                </Button>
+                                <Button onClick={resetFilter}>重置</Button>
                             </Space>
                         </Space>
                     </ProCard>

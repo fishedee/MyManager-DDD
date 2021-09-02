@@ -22,7 +22,7 @@ create table persistent_logins(
                                   username varchar(64) not null,
                                   series varchar(64) not null,
                                   token varchar(64) not null,
-                                  last_used datetime not null,
+                                  last_used timestamp not null,
                                   primary key(series)
 )engine=innodb default charset=utf8 auto_increment = 10001;
 
@@ -108,8 +108,20 @@ insert into card(id,user_id,user_name,name,bank,card,money,remark,create_time,mo
 
 insert into account(id,user_id,user_name,name,money,remark,category_id,category_name,card_id,card_name,type,create_time,modify_time) values
 (10001,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','IN',now(),now()),
-(10002,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT','2014-11-10 12:0:0','2014-11-10 12:0:0'),
-(10003,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN','2014-10-10 12:0:0','2014-10-10 12:0:0');
+(10002,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT',now(),now()),
+(10003,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN',now(),now()),
+(10004,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','IN',now(),now()),
+(10005,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT',now(),now()),
+(10006,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN',now(),now()),
+(10007,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','IN',now(),now()),
+(10008,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT',now(),now()),
+(10009,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN',now(),now()),
+(10010,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','IN',now(),now()),
+(10011,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT',now(),now()),
+(10012,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN',now(),now()),
+(10013,10001,'fish',"日常支出",100,'',10001,"日常收支",10002,'消费卡','IN',now(),now()),
+(10014,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','OUT',now(),now()),
+(10015,10001,'fish',"日常收入",100,'',10001,"日常收支",10002,'消费卡','TRANSFER_IN',now(),now());
 
 #显示一下所有数据
 select * from user;

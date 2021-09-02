@@ -39,7 +39,7 @@ const SchemaField = createSchemaField({
 const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
-    const { form, data, fetch, loading } = useTableBoost(
+    const { form, data, fetch, loading, resetFilter } = useTableBoost(
         '/category/search',
         {
             effects: () => {
@@ -194,14 +194,7 @@ const CardList: React.FC<any> = observer((props) => {
                                     justifyContent: 'flex-end',
                                 }}
                             >
-                                <Button
-                                    onClick={() => {
-                                        data.filter = {};
-                                        fetch();
-                                    }}
-                                >
-                                    重置
-                                </Button>
+                                <Button onClick={resetFilter}>重置</Button>
                             </Space>
                         </Space>
                     </ProCard>
