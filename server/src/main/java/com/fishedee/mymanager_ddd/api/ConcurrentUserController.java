@@ -21,7 +21,7 @@ public class ConcurrentUserController {
     //wrk性能测试 wrk -t8 -c100 -d10s "http://localhost:9191/api/concurrentUser/incAge?data=%7B%22id%22%3A10001%7D"
     //ab性能测试 ab -n 1000 -c 10 -k "http://localhost:9191/api/concurrentUser/incAge?data=%7B%22id%22%3A10001%7D"
     @GetMapping("/incAge")
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public void incAge(Long id){
         ConcurrentUser user = concurrentUserRepository.getForLock(id);
         user.incAge();
