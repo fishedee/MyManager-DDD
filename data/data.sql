@@ -16,7 +16,8 @@ insert into id_generator_config(`key`,template,step,initial_value) values
 ('user','{id}',10,'20001'),
 ('category','{id}',10,'20001'),
 ('card','{id}',10,'20001'),
-('account','{id}',10,'20001');
+('account','{id}',10,'20001'),
+('concurrentUser','{id}',10,'30001');
 
 create table persistent_logins(
                                   username varchar(64) not null,
@@ -90,8 +91,6 @@ create table account(
 
 alter table account add index userIdIndex(user_id);
 
-
-
 insert into user(id,name,roles,remark,is_enabled,password,create_time,modify_time) values
 (10001,'fish','ADMIN','','ENABLE','$2a$12$WtxiMJuXjgzCpa1OWT8hR.wMpxq0DbeF1fMpCJbdzCdhdYte1ZtfC',now(),now());
 
@@ -128,5 +127,15 @@ select * from user;
 select * from category;
 select * from card;
 select * from account;
+
+
+#创建记账表
+create table concurrent_user(
+          id integer not null,
+          age integer not null,
+          primary key( id )
+)engine=innodb default charset=utf8 auto_increment = 10001;
+
+insert into concurrent_user(id,age) values(10001,10);
 
 
