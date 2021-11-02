@@ -43,6 +43,7 @@ SPRING_PROFILES_ACTIVE=development mvn spring-boot:run
 
 ```bash
 cd static
+npm install
 npm start
 ```
 
