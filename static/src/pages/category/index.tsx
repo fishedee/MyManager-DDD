@@ -2,7 +2,7 @@ import MyPageContainer from '@/components/MyPageContainer';
 import {
     Table,
     SpaceDivider,
-    useTableBoost,
+    useQueryTableBoost,
     useRequest,
 } from 'antd-formily-boost';
 import { createSchemaField, observer, FormConsumer } from '@formily/react';
@@ -39,7 +39,7 @@ const SchemaField = createSchemaField({
 const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
-    const { form, data, fetch, loading, resetFilter } = useTableBoost(
+    const { form, fetch, loading, resetFilter } = useQueryTableBoost(
         '/category/search',
         {
             effects: () => {
@@ -110,7 +110,7 @@ const CardList: React.FC<any> = observer((props) => {
                 name="list"
                 x-component="Table"
                 x-component-props={{
-                    paginaction: data.paginaction,
+                    paginaction: 'paginaction',
                     paginationProps: {
                         showQuickJumper: true,
                         showSizeChanger: true,

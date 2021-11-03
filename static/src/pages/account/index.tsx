@@ -3,7 +3,7 @@ import {
     Table,
     SpaceDivider,
     useRequest,
-    useTableBoost,
+    useQueryTableBoost,
 } from 'antd-formily-boost';
 import { createSchemaField, observer, FormConsumer } from '@formily/react';
 import { Button } from 'antd';
@@ -45,7 +45,7 @@ const SchemaField = createSchemaField({
 const CardList: React.FC<any> = observer((props) => {
     const history = useHistory();
     const request = useRequest();
-    const { form, data, fetch, loading, resetFilter } = useTableBoost(
+    const { form, fetch, loading, resetFilter } = useQueryTableBoost(
         '/account/search',
         {
             effects: () => {
@@ -137,7 +137,7 @@ const CardList: React.FC<any> = observer((props) => {
                 name="list"
                 x-component="Table"
                 x-component-props={{
-                    paginaction: data.paginaction,
+                    paginaction: 'paginaction',
                     paginationProps: {
                         showQuickJumper: true,
                         showSizeChanger: true,

@@ -17,7 +17,7 @@ import SelectIsEnabled from './SelectIsEnabled';
 import SelectRole from './SelectRole';
 import Link from '@/components/Link';
 import ProCard from '@ant-design/pro-card';
-import useDetailBoost from '@/hooks/useDetailBoost';
+import useQueryDetailBoost from '@/hooks/useQueryDetailBoost';
 import { Modal } from 'antd';
 
 const SchemaField = createSchemaField({
@@ -39,7 +39,7 @@ const SchemaField = createSchemaField({
 
 const UsetDetail: React.FC<any> = observer((props) => {
     const request = useRequest();
-    const { mod, form, data, loading, id } = useDetailBoost(
+    const { mod, form, loading, id } = useQueryDetailBoost(
         '/user/get',
         {},
         {
@@ -55,7 +55,7 @@ const UsetDetail: React.FC<any> = observer((props) => {
                 url: '/user/add',
                 data: {
                     id: id,
-                    ...data.detail,
+                    ...form.values.detail,
                 },
             });
             if (result.status == 'fail') {

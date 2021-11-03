@@ -16,7 +16,7 @@ import {
 } from '@formily/antd';
 import Link from '@/components/Link';
 import ProCard from '@ant-design/pro-card';
-import useDetailBoost from '@/hooks/useDetailBoost';
+import useQueryDetailBoost from '@/hooks/useQueryDetailBoost';
 import { Modal } from 'antd';
 
 const SchemaField = createSchemaField({
@@ -36,7 +36,7 @@ const SchemaField = createSchemaField({
 });
 
 const CardDetail: React.FC<any> = observer((props) => {
-    const { save, form, loading } = useDetailBoost(
+    const { save, form, loading } = useQueryDetailBoost(
         '/category/get',
         {},
         {

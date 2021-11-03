@@ -16,7 +16,7 @@ import {
 } from '@formily/antd';
 import Link from '@/components/Link';
 import ProCard from '@ant-design/pro-card';
-import useDetailBoost from '@/hooks/useDetailBoost';
+import useQueryDetailBoost from '@/hooks/useQueryDetailBoost';
 import SelectType from './SelectType';
 import SelectCard from '@/pages/card/SelectCard';
 import SelectCategory from '@/pages/category/SelectCategory';
@@ -41,7 +41,7 @@ const SchemaField = createSchemaField({
 });
 
 const AccountDetail: React.FC<any> = observer((props) => {
-    const { save, form, loading } = useDetailBoost(
+    const { save, form, loading } = useQueryDetailBoost(
         '/account/get',
         {},
         {

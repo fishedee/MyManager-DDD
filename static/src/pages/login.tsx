@@ -39,7 +39,7 @@ const formTab = FormTab.createFormTab();
 
 export default function IndexPage() {
     const { initialState, setInitialState } = useModel('@@initialState');
-    const { form, data } = useForm({
+    const { form } = useForm({
         values: {
             login: {},
         },
@@ -55,7 +55,7 @@ export default function IndexPage() {
         let result = await request({
             method: 'POST',
             url: '/login/login',
-            params: data.login,
+            params: form.values.login,
         });
         if (result.status == 'fail') {
             return;
